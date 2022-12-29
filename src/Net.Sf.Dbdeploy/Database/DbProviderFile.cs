@@ -14,13 +14,13 @@ namespace Net.Sf.Dbdeploy.Database
 
         public DbProviderFile()
         {
-            this.path = null;
+            path = null;
         }
 
         public string Path
         {
-            get { return this.path; }
-            set { this.path = value; }
+            get { return path; }
+            set { path = value; }
         }
 
         public DbProviders LoadProviders()

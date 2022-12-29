@@ -18,15 +18,15 @@ namespace Dbdeploy.Powershell.Commands
             var infoTextWriter = new LambdaTextWriter(WriteVerbose);
 
             List<ChangeScript> allChangeScripts = new DirectoryScanner(infoTextWriter, Encoding.UTF8)
-                .GetChangeScriptsForDirectory(new DirectoryInfo(this.deltasDirectory));
+                .GetChangeScriptsForDirectory(new DirectoryInfo(deltasDirectory));
             
             var repository = new ChangeScriptRepository(allChangeScripts);
             var changeScripts = repository.GetAvailableChangeScripts();
 
-            DbmsFactory factory = new DbmsFactory(this.DatabaseType, this.ConnectionString);
+            DbmsFactory factory = new DbmsFactory(DatabaseType, ConnectionString);
             var queryExecuter = new QueryExecuter(factory);
 
-            var schemaManager = new DatabaseSchemaVersionManager(queryExecuter, factory.CreateDbmsSyntax(), this.TableName);
+            var schemaManager = new DatabaseSchemaVersionManager(queryExecuter, factory.CreateDbmsSyntax(), TableName);
 
             var appliedChanges = schemaManager.GetAppliedChanges();
             var notAppliedChangeScripts = changeScripts.Where(c => appliedChanges.All(a => a.ScriptNumber != c.ScriptNumber));
@@ -41,7 +41,7 @@ namespace Dbdeploy.Powershell.Commands
                         File = script.FileInfo
                     });
 
-            this.WriteObject(objects, true);
+            WriteObject(objects, true);
         }
     }
 }

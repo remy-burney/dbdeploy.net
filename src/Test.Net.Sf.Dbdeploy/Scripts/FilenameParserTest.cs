@@ -1,6 +1,6 @@
 namespace Net.Sf.Dbdeploy.Scripts
 {
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Exceptions;
 
     using NUnit.Framework;
 

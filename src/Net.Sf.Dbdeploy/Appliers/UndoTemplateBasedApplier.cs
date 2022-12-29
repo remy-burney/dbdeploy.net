@@ -2,7 +2,7 @@
 {
     using System.IO;
 
-    using Net.Sf.Dbdeploy.Database;
+    using Database;
 
     public class UndoTemplateBasedApplier : TemplateBasedApplier
     {

@@ -4,8 +4,8 @@
     using System.IO;
     using System.Linq;
 
-    using Net.Sf.Dbdeploy.Configuration;
-    using Net.Sf.Dbdeploy.Database;
+    using Configuration;
+    using Database;
 
     using NUnit.Framework;
 

@@ -2,7 +2,7 @@ namespace Net.Sf.Dbdeploy
 {
     using System.Collections.Generic;
 
-    using Net.Sf.Dbdeploy.Scripts;
+    using Scripts;
 
     public interface IChangeScriptApplier
     {

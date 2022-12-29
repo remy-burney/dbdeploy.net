@@ -3,8 +3,8 @@
     using System;
     using System.IO;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Database;
+    using Exceptions;
 
     using Moq;
     using NUnit.Framework;

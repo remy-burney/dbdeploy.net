@@ -17,12 +17,12 @@ namespace Net.Sf.Dbdeploy.Database
             this.dbms = dbms;
             this.connectionString = connectionString;
 
-            this.providers = new DbProviderFile().LoadProviders();
+            providers = new DbProviderFile().LoadProviders();
         }
 
         public virtual IDbmsSyntax CreateDbmsSyntax()
         {
-            switch (this.dbms)
+            switch (dbms)
             {
                 case "ora":
                     return new OracleDbmsSyntax();
@@ -37,12 +37,13 @@ namespace Net.Sf.Dbdeploy.Database
 
         public virtual IDbConnection CreateConnection()
         {
-            DatabaseProvider provider = this.providers.GetProvider(dbms);
+            DatabaseProvider provider = providers.GetProvider(dbms);
 
             Assembly assembly = Assembly.Load(provider.AssemblyName);
             Type type = assembly.GetType(provider.ConnectionClass);
-
-            return (IDbConnection)Activator.CreateInstance(type, this.connectionString);
+            if (type == null)
+                throw new NullReferenceException($"Cannot get type {provider.ConnectionClass} for DbConnection");
+            return (IDbConnection)Activator.CreateInstance(type, connectionString);
         }
     }
 }

@@ -6,16 +6,13 @@ namespace Net.Sf.Dbdeploy.Database
     using System.Collections.Generic;
     using System.Configuration;
     using System.Data;
-    using System.Data.SqlClient;
     using System.Globalization;
     using System.IO;
     using System.Text;
-    using global::Dbdeploy.Powershell;
-    using Net.Sf.Dbdeploy.Appliers;
-    using Net.Sf.Dbdeploy.Configuration;
-    using Net.Sf.Dbdeploy.Database.SqlCmd;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Appliers;
+    using Configuration;
+    using SqlCmd;
+    using Scripts;
     using NUnit.Framework;
 
     [Category("MYSQL"), Category("DbIntegration")]
@@ -62,7 +59,7 @@ namespace Net.Sf.Dbdeploy.Database
         [Test]
     	public void ShouldNotThrowExceptionIfAllPreviousScriptsAreCompleted()
     	{
-			this.EnsureTableDoesNotExist();
+			EnsureTableDoesNotExist();
 			CreateTable();
     		InsertRowIntoTable(3);
 			var changeNumbers = new List<ChangeEntry>(databaseSchemaVersion.GetAppliedChanges());
@@ -75,10 +72,10 @@ namespace Net.Sf.Dbdeploy.Database
         [Test]
         public void TestDoesNotRunSecondScriptIfFirstScriptFails()
         {
-            this.EnsureTableDoesNotExist("TableWeWillUse");
-            this.EnsureTableDoesNotExist(TableName);
+            EnsureTableDoesNotExist("TableWeWillUse");
+            EnsureTableDoesNotExist(TableName);
 
-            var factory = new DbmsFactory(this.Dbms, this.ConnectionString);
+            var factory = new DbmsFactory(Dbms, ConnectionString);
             var dbmsSyntax = factory.CreateDbmsSyntax();
 
             var output = new StringBuilder();
@@ -97,12 +94,12 @@ namespace Net.Sf.Dbdeploy.Database
                 new StubChangeScript(2, "2.test.sql", "CREATE TABLE dbo.TableWeWillUse (Id int NULL);"), 
             }, createChangeLogTable: true);
 
-            using (var sqlExecuter = new SqlCmdExecutor(this.ConnectionString))
+            using (var sqlExecuter = new SqlCmdExecutor(ConnectionString))
             {
                 var cmdOutput = new StringBuilder();
                 sqlExecuter.ExecuteString(output.ToString(), cmdOutput);
             }
-            this.AssertTableDoesNotExist("TableWeWillUse");
+            AssertTableDoesNotExist("TableWeWillUse");
         }
 
 
@@ -138,7 +135,7 @@ namespace Net.Sf.Dbdeploy.Database
         {
             var syntax = new MySqlDbmsSyntax();
             var tableInfo = syntax.GetTableInfo(tableName);
-            this.ExecuteSql(string.Format(
+            ExecuteSql(string.Format(
                 CultureInfo.InvariantCulture,
 @"DROP TABLE IF EXISTS {0}.{1}", 
                 tableInfo.Schema, tableInfo.TableName));
@@ -151,7 +148,7 @@ namespace Net.Sf.Dbdeploy.Database
 
         protected override void InsertRowIntoTable(int i)
         {
-            this.ExecuteSql("INSERT INTO " + TableName
+            ExecuteSql("INSERT INTO " + TableName
                        + " (Folder, ScriptNumber, StartDate, CompleteDate, AppliedBy, ScriptName, ScriptStatus, ScriptOutput) VALUES ( "
                        + "'" + FOLDER + "', " + i
                        + ", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, USER(), 'Unit test', 1, '')");

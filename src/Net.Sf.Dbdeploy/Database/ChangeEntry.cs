@@ -2,7 +2,7 @@
 {
     using System.Globalization;
 
-    using Net.Sf.Dbdeploy.Scripts;
+    using Scripts;
 
     /// <summary>
     /// Represents a logged change to the database.
@@ -59,7 +59,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}/{1} ({2})", this.Folder, this.ScriptName, ScriptNumber);
+            return string.Format(CultureInfo.InvariantCulture, "{0}/{1} ({2})", Folder, ScriptName, ScriptNumber);
         }
     }
 }

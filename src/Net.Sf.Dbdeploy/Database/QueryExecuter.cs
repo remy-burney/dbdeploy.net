@@ -17,13 +17,13 @@
 
         public QueryExecuter(DbmsFactory factory)
         {
-            this.connection = factory.CreateConnection();
+            connection = factory.CreateConnection();
 
-            this.connection.Open();
+            connection.Open();
 
-            this.currentOutput = null;
+            currentOutput = null;
 
-            this.AttachInfoMessageEventHandler(this.connection);
+            AttachInfoMessageEventHandler(connection);
         }
 
         /// <summary>
@@ -51,9 +51,9 @@
         public virtual IDataReader ExecuteQuery(string sql, StringBuilder output, params object[] parameters)
         {
             // Capture output to string builder specified.
-            this.currentOutput = output;
+            currentOutput = output;
 
-            using (IDbCommand command = this.CreateCommand())
+            using (IDbCommand command = CreateCommand())
             {
                 command.CommandText = sql;
 
@@ -81,7 +81,7 @@
         /// <param name="parameters">The parameters to format into the SQL.</param>
         public virtual void Execute(string sql, params object[] parameters)
         {
-            this.Execute(sql, null, parameters);
+            Execute(sql, null, parameters);
         }
 
         /// <summary>
@@ -93,9 +93,9 @@
         public virtual void Execute(string sql, StringBuilder output, params object[] parameters)
         {
             // Capture output to string builder specified.
-            this.currentOutput = output;
+            currentOutput = output;
 
-            using (IDbCommand command = this.CreateCommand())
+            using (IDbCommand command = CreateCommand())
             {
                 command.CommandText = sql;
 
@@ -118,7 +118,7 @@
 
         public virtual void Execute(string sql)
         {
-            using (IDbCommand command = this.CreateCommand())
+            using (IDbCommand command = CreateCommand())
             {
                 command.CommandText = sql;
 
@@ -128,28 +128,28 @@
 
         public virtual void BeginTransaction()
         {
-            if (this.transaction != null)
+            if (transaction != null)
                 throw new InvalidOperationException("There is already an open transaction.");
 
-            this.transaction = this.connection.BeginTransaction();
+            transaction = connection.BeginTransaction();
         }
 
         public virtual void CommitTransaction()
         {
-            if (this.transaction == null)
+            if (transaction == null)
                 throw new InvalidOperationException("There is no open transaction.");
 
-            this.transaction.Commit();
+            transaction.Commit();
 
-            this.transaction.Dispose();
-            this.transaction = null;
+            transaction.Dispose();
+            transaction = null;
         }
 
         public virtual void Close()
         {
-            if (this.connection.State == ConnectionState.Open)
+            if (connection.State == ConnectionState.Open)
             {
-                this.connection.Close();
+                connection.Close();
             }
         }
 
@@ -160,9 +160,9 @@
         /// <param name="args">The args.</param>
         public void InfoMessageEventHandler(object sender, EventArgs args)
         {
-            if (this.currentOutput != null)
+            if (currentOutput != null)
             {
-                this.currentOutput.AppendLine(((dynamic)args).Message);
+                currentOutput.AppendLine(((dynamic)args).Message);
             }
         }
 
@@ -179,7 +179,7 @@
                 var eventInfo = dbConnection.GetType().GetEvent("InfoMessage");
                 if (eventInfo != null)
                 {
-                    var methodInfo = this.GetType().GetMethod("InfoMessageEventHandler", new[] { typeof(object), typeof(EventArgs) });
+                    var methodInfo = GetType().GetMethod("InfoMessageEventHandler", new[] { typeof(object), typeof(EventArgs) });
                     var handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, this, methodInfo, true);
                     eventInfo.AddEventHandler(dbConnection, handler);
                 }
@@ -192,11 +192,11 @@
 
         private IDbCommand CreateCommand()
         {
-            IDbCommand command = this.connection.CreateCommand();
+            IDbCommand command = connection.CreateCommand();
 
-            if (this.transaction != null)
+            if (transaction != null)
             {
-                command.Transaction = this.transaction;
+                command.Transaction = transaction;
             }
 
             return command;

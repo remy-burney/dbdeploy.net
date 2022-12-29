@@ -16,86 +16,86 @@ namespace MSBuild.Dbdeploy.Task
                         
         public Dbdeploy()
         {
-            this.config = new DbDeployConfig();
+            config = new DbDeployConfig();
         }
 
         [Required]
         public string DbType
         {
-            set { this.config.Dbms = value; }
+            set { config.Dbms = value; }
         }
 
         [Required]
         public string DbConnection
         {
-            set { this.config.ConnectionString = value; }
+            set { config.ConnectionString = value; }
         }
 
         [Required]
         public string Dir
         {
-            get { return this.config.ScriptDirectory.FullName; }
-            set { this.config.ScriptDirectory = new DirectoryInfo(value); }
+            get { return config.ScriptDirectory.FullName; }
+            set { config.ScriptDirectory = new DirectoryInfo(value); }
         }
 
         public string OutputFile
         {
-            get { return this.config.OutputFile.FullName; }
-            set { this.config.OutputFile = new FileInfo(value); }
+            get { return config.OutputFile.FullName; }
+            set { config.OutputFile = new FileInfo(value); }
         }
 
         public string Encoding
         {
-            get { return this.config.Encoding.EncodingName; }
-            set { this.config.Encoding = new OutputFileEncoding(value).AsEncoding(); }
+            get { return config.Encoding.EncodingName; }
+            set { config.Encoding = new OutputFileEncoding(value).AsEncoding(); }
         }
 
         public string UndoOutputFile
         {
-            get { return this.config.UndoOutputFile.FullName; }
-            set { this.config.UndoOutputFile = new FileInfo(value); }
+            get { return config.UndoOutputFile.FullName; }
+            set { config.UndoOutputFile = new FileInfo(value); }
         }
 
         public string TemplateDir
         {
-            get { return this.config.TemplateDirectory.FullName; }
-            set { this.config.TemplateDirectory = new DirectoryInfo(value); }
+            get { return config.TemplateDirectory.FullName; }
+            set { config.TemplateDirectory = new DirectoryInfo(value); }
         }
 
         public string LastChangeToApply
         {
-            get { return this.config.LastChangeToApply != null ? this.config.LastChangeToApply.ToString() : string.Empty; }
-            set { this.config.LastChangeToApply = string.IsNullOrWhiteSpace(value) ? null : new UniqueChange(value); }
+            get { return config.LastChangeToApply != null ? config.LastChangeToApply.ToString() : string.Empty; }
+            set { config.LastChangeToApply = string.IsNullOrWhiteSpace(value) ? null : new UniqueChange(value); }
         }
 
         public string TableName
         {
-            get { return this.config.ChangeLogTableName; }
-            set { this.config.ChangeLogTableName = value; }
+            get { return config.ChangeLogTableName; }
+            set { config.ChangeLogTableName = value; }
         }
 
         public bool AutoCreateChangeLogTable
         {
-            get { return this.config.AutoCreateChangeLogTable; }
-            set { this.config.AutoCreateChangeLogTable = value; }
+            get { return config.AutoCreateChangeLogTable; }
+            set { config.AutoCreateChangeLogTable = value; }
         }
 
         public bool UseSqlCmd
         {
-            get { return this.config.UseSqlCmd; }
-            set { this.config.UseSqlCmd = value; }
+            get { return config.UseSqlCmd; }
+            set { config.UseSqlCmd = value; }
         }
 
         public string Delimiter
         {
-            get { return this.config.Delimiter; }
-            set { this.config.Delimiter = value; }
+            get { return config.Delimiter; }
+            set { config.Delimiter = value; }
         }
 
         public string DelimiterType
         {
-            get { return this.config.DelimiterType.GetType().Name; }
-            set { this.config.DelimiterType = DelimiterTypeFactory.Create(value); }
+            get { return config.DelimiterType.GetType().Name; }
+            set { config.DelimiterType = DelimiterTypeFactory.Create(value); }
         }
 
         public IBuildEngine BuildEngine { get; set; }
@@ -107,7 +107,7 @@ namespace MSBuild.Dbdeploy.Task
             try
             {
                 var deployer = new DbDeployer();
-                deployer.Execute(this.config, Console.Out);
+                deployer.Execute(config, Console.Out);
 
                 return true;
             }
@@ -115,7 +115,7 @@ namespace MSBuild.Dbdeploy.Task
             {
                 Console.Error.WriteLine(ex.Message);
 
-                this.PrintUsage();
+                PrintUsage();
             }
             catch (DbDeployException ex)
             {

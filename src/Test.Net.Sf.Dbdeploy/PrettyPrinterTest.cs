@@ -3,8 +3,8 @@ namespace Net.Sf.Dbdeploy
     using System.Collections.Generic;
     using System.Linq;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Scripts;
 
     using NUnit.Framework;
 
@@ -22,21 +22,21 @@ namespace Net.Sf.Dbdeploy
         [Test]
         public void ShouldDisplayNonRangedNumbersAsSeperateEntities()
         {
-            var list = this.CreateUniqueChangeList("v1.0", 1, 3, 5);
+            var list = CreateUniqueChangeList("v1.0", 1, 3, 5);
             Assert.AreEqual("  v1.0\t1, 3, 5", prettyPrinter.Format(list));
         }
 
         [Test]
         public void ShouldDisplayARangeAsSuch()
         {
-            var list = this.CreateUniqueChangeList("v1.0", 1, 2, 3, 4, 5);
+            var list = CreateUniqueChangeList("v1.0", 1, 2, 3, 4, 5);
             Assert.AreEqual("  v1.0\t1..5", prettyPrinter.Format(list));
         }
 
         [Test]
         public void RangesOfTwoAreNotDisplayedAsARange()
         {
-            var list = this.CreateUniqueChangeList("v1.0", 1, 2);
+            var list = CreateUniqueChangeList("v1.0", 1, 2);
             Assert.AreEqual("  v1.0\t1, 2", prettyPrinter.Format(list));
         }
 
@@ -49,7 +49,7 @@ namespace Net.Sf.Dbdeploy
         [Test]
         public void CanDealWithMixtureOfRangesAndNonRanges()
         {
-            var list = this.CreateUniqueChangeList("v1.0", 1, 2, 4, 7, 8, 9, 10, 12);
+            var list = CreateUniqueChangeList("v1.0", 1, 2, 4, 7, 8, 9, 10, 12);
             Assert.AreEqual("  v1.0\t1, 2, 4, 7..10, 12", prettyPrinter.Format(list));
         }
 
@@ -71,7 +71,7 @@ namespace Net.Sf.Dbdeploy
         [Test]
         public void CanHandleMultipleFolders()
         {
-            var list = this.CreateUniqueChangeList("v1.0", 4, 5, 6).Concat(this.CreateUniqueChangeList("v2.0", 1, 2));
+            var list = CreateUniqueChangeList("v1.0", 4, 5, 6).Concat(CreateUniqueChangeList("v2.0", 1, 2));
             Assert.AreEqual("  v1.0\t4..6\r\n  v2.0\t1, 2", prettyPrinter.Format(list));
         }
 

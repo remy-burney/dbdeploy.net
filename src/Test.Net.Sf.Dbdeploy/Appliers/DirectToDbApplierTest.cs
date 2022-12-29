@@ -6,9 +6,9 @@
 
     using Moq;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Exceptions;
+    using Scripts;
 
     using NUnit.Framework;
 
@@ -30,16 +30,16 @@
             factory.Setup(f => f.CreateConnection()).Returns(new Mock<IDbConnection>().Object);
             factory.Setup(f => f.CreateDbmsSyntax()).Returns(syntax);
 
-            this.queryExecuter = new Mock<QueryExecuter>(factory.Object);
+            queryExecuter = new Mock<QueryExecuter>(factory.Object);
 
-            this.schemaVersionManager = new Mock<DatabaseSchemaVersionManager>(nullExecuter, syntax, "empty");
+            schemaVersionManager = new Mock<DatabaseSchemaVersionManager>(nullExecuter, syntax, "empty");
 
-            this.splitter = new Mock<QueryStatementSplitter>();
+            splitter = new Mock<QueryStatementSplitter>();
 
-            this.applier = new DirectToDbApplierAccessor(
-                this.queryExecuter.Object,
-                this.schemaVersionManager.Object,
-                this.splitter.Object,
+            applier = new DirectToDbApplierAccessor(
+                queryExecuter.Object,
+                schemaVersionManager.Object,
+                splitter.Object,
                 syntax, 
                 "ChangeLog",
                 System.Console.Out);
@@ -48,28 +48,28 @@
         [Test]
         public void ShouldApplyChangeScriptBySplittingContentUsingTheSplitter() 
         {
-            this.splitter.Setup(s => s.Split("split; content")).Returns(new List<string> { "split", "content" });
+            splitter.Setup(s => s.Split("split; content")).Returns(new List<string> { "split", "content" });
 
             var output = new StringBuilder();
-            this.applier.ApplyChangeScript(new StubChangeScript(1, "script", "split; content"), output);
+            applier.ApplyChangeScript(new StubChangeScript(1, "script", "split; content"), output);
 
-            this.queryExecuter.Verify(e => e.Execute("split", It.IsAny<StringBuilder>()));
-            this.queryExecuter.Verify(e => e.Execute("content", It.IsAny<StringBuilder>()));
+            queryExecuter.Verify(e => e.Execute("split", It.IsAny<StringBuilder>()));
+            queryExecuter.Verify(e => e.Execute("content", It.IsAny<StringBuilder>()));
         }
 
         [Test]
         public void ShouldRethrowSqlExceptionsWithInformationAboutWhatStringFailed() 
         {
-            this.splitter.Setup(s => s.Split("split; content")).Returns(new List<string> { "split", "content" });
+            splitter.Setup(s => s.Split("split; content")).Returns(new List<string> { "split", "content" });
                 
             ChangeScript script = new StubChangeScript(1, "script", "split; content");
             
-            this.queryExecuter.Setup(e => e.Execute("split", It.IsAny<StringBuilder>())).Throws(new DummyDbException());
+            queryExecuter.Setup(e => e.Execute("split", It.IsAny<StringBuilder>())).Throws(new DummyDbException());
 
             try 
             {
                 var output = new StringBuilder();
-                this.applier.ApplyChangeScript(script, output);
+                applier.ApplyChangeScript(script, output);
                         
                 Assert.Fail("exception expected");
             }
@@ -79,7 +79,7 @@
                 Assert.AreEqual(script, e.Script);
             }
 
-            this.queryExecuter.Verify(e => e.Execute("content"), Times.Never());
+            queryExecuter.Verify(e => e.Execute("content"), Times.Never());
         }
 
         [Test]
@@ -87,9 +87,9 @@
         {
             ChangeScript changeScript = new ChangeScript("Scripts", 1, "script.sql");
 
-            this.applier.RecordScriptStatus(changeScript, ScriptStatus.Success, "Script completed");
+            applier.RecordScriptStatus(changeScript, ScriptStatus.Success, "Script completed");
 
-            this.schemaVersionManager.Verify(s => s.RecordScriptStatus(changeScript, ScriptStatus.Success, "Script completed"));
+            schemaVersionManager.Verify(s => s.RecordScriptStatus(changeScript, ScriptStatus.Success, "Script completed"));
         }
 
         [Test]
@@ -97,9 +97,9 @@
         {
             ChangeScript changeScript = new ChangeScript("Scripts", 1, "script.sql");
 
-            this.applier.RecordScriptStatus(changeScript, ScriptStatus.Failure, "Script failed");
+            applier.RecordScriptStatus(changeScript, ScriptStatus.Failure, "Script failed");
 
-            this.schemaVersionManager.Verify(s => s.RecordScriptStatus(changeScript, ScriptStatus.Failure, "Script failed"));
+            schemaVersionManager.Verify(s => s.RecordScriptStatus(changeScript, ScriptStatus.Failure, "Script failed"));
         }
 
         [Test]
@@ -107,15 +107,15 @@
         {
             var scripts = new List<ChangeScript> { new StubChangeScript(1, "description", "content") };
 
-            this.queryExecuter.Setup(e => e.BeginTransaction()).Callback(() => { return; });
-            this.queryExecuter.Setup(e => e.CommitTransaction()).Callback(() => { return; });
+            queryExecuter.Setup(e => e.BeginTransaction()).Callback(() => { return; });
+            queryExecuter.Setup(e => e.CommitTransaction()).Callback(() => { return; });
 
-            this.splitter.Setup(s => s.Split(It.IsAny<string>())).Returns<string>(s => new [] { s });
+            splitter.Setup(s => s.Split(It.IsAny<string>())).Returns<string>(s => new [] { s });
 
-            this.applier.Apply(scripts, false);
+            applier.Apply(scripts, false);
 
-            this.queryExecuter.Verify(e => e.BeginTransaction(), Times.Once());
-            this.queryExecuter.Verify(e => e.CommitTransaction(), Times.Once());
+            queryExecuter.Verify(e => e.BeginTransaction(), Times.Once());
+            queryExecuter.Verify(e => e.CommitTransaction(), Times.Once());
         }
     }
 }

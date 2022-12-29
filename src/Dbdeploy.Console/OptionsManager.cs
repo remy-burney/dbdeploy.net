@@ -1,13 +1,12 @@
-﻿namespace Net.Sf.Dbdeploy
+﻿using System.CommandLine;
+using System.Linq;
+
+namespace Net.Sf.Dbdeploy
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-
-    using NDesk.Options;
-
-    using Net.Sf.Dbdeploy.Configuration;
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Configuration;
+    using Exceptions;
 
     /// <summary>
     /// Manages all options for the command line.
@@ -19,9 +18,8 @@
         /// </summary>
         public static void PrintUsage()
         {
-            OptionSet options = Initialize(null, new ConfigFileInfo());
-
-            options.WriteOptionDescriptions(Console.Out);
+            var rootCommand = Initialize(null, new ConfigFileInfo());
+            rootCommand.InvokeAsync("");
         }
 
         /// <summary>
@@ -40,21 +38,14 @@
             {
                 var configFile = new ConfigFileInfo();
                 var config = new DbDeployConfig();
-                OptionSet options = Initialize(config, configFile);
+                var rootCommand = Initialize(config, configFile);
                 deploymentsConfig.Deployments.Add(config);
 
-                List<string> unknown = options.Parse(args);
-
-                if (unknown != null && unknown.Count != 0)
+                var result = rootCommand.Parse(args);
+                
+                if (result.UnmatchedTokens.Count > 0 && result.UnmatchedTokens.Any(s => !string.IsNullOrEmpty(s.Trim())))
                 {
-                    foreach (var s in unknown)
-                    {
-                        // empty "unkown" parameters are allowed
-                        if (s != null && !string.IsNullOrEmpty(s.Trim()))
-                        {
-                            throw new UsageException("Unkown parameter(s): " + string.Join(", ", unknown.ToArray()));
-                        }
-                    }
+                    throw new UsageException("Unknown parameter(s): " + string.Join(", ", result.UnmatchedTokens));
                 }
 
                 // If a configuration file was specified in the command, use that instead of options.
@@ -64,13 +55,14 @@
                     deploymentsConfig = configurationManager.ReadConfiguration(configFile.FileInfo.FullName);
                 }
             }
-            catch (OptionException e)
+            catch (Exception e)
             {
                 throw new UsageException(e.Message, e);
             }
 
             return deploymentsConfig;
         }
+
 
         /// <summary>
         /// Initializes the specified config.
@@ -80,87 +72,70 @@
         /// <returns>
         /// Option set for the config.
         /// </returns>
-        private static OptionSet Initialize(DbDeployConfig config, ConfigFileInfo configFile) 
+        private static RootCommand Initialize(DbDeployConfig config, ConfigFileInfo configFile)
         {
-            var options = new OptionSet();
-
-            options
-                .Add(
-                    "d|dbms=",
-                    "DBMS type ('mssql', 'mysql' or 'ora')",
-                    s => config.Dbms = s)
-
-                .Add(
-                    "c|connectionstring=",
-                    "connection string for database",
-                    s => config.ConnectionString = StripQuotes(s))
-
-                .Add(
-                    "s|scriptdirectory=",
-                    "directory containing change scripts (default: .)",
-                    s => config.ScriptDirectory = new DirectoryInfo(StripQuotes(s)))
-
-                .Add(
-                    "o|outputfile=",
-                    "output file",
-                    s => config.OutputFile = new FileInfo(StripQuotes(s)))
-
-                .Add(
-                    "t|changelogtablename=",
-                    "name of change log table to use (default: ChangeLog)",
-                    s => config.ChangeLogTableName = StripQuotes(s))
-
-                .Add(
-                    "a|autocreatechangelogtable=",
-                    "automatically creates the change log table if it does not exist (true or false).  Defaults to true.",
-                    s => config.AutoCreateChangeLogTable = s.ToLowerInvariant() != "false")
-
-                .Add(
-                    "f|forceupdate=",
-                    "forces previously failed scripts to be run again (true or false).  Defaults to false.",
-                    s => config.ForceUpdate = s.ToLowerInvariant() == "true")
-
-                .Add(
-                    "u|usesqlcmd=",
-                    "runs scripts in SQLCMD mode (true or false).  Defaults to false.",
-                    s => config.UseSqlCmd = s.ToLowerInvariant() == "true")
-
-                .Add(
-                    "l|lastchangetoapply=",
-                    "sets the last change to apply in the form of folder/scriptnumber (v1.0.0/4).",
-                    s => config.LastChangeToApply = !string.IsNullOrWhiteSpace(s) ? new UniqueChange(s) : null)
-
-                .Add(
-                    "e|encoding=",
-                    "encoding for input and output files (default: UTF-8)",
-                    s => config.Encoding = new OutputFileEncoding(StripQuotes(s)).AsEncoding())
-
-                .Add(
-                    "templatedirectory=",
-                    "template directory",
-                    s => config.TemplateDirectory = new DirectoryInfo(StripQuotes(s)))
-
-                .Add(
-                    "delimiter=",
-                    "delimiter to separate sql statements",
-                    s => config.Delimiter = s)
-
-                .Add(
-                    "delimitertype=",
-                    "delimiter type to separate sql statements (row or normal)",
-                    s => config.DelimiterType = Parser.ParseDelimiterType(s))
-
-                .Add(
-                    "lineending=",
-                    "line ending to use when applying scripts direct to db (platform, cr, crlf, lf)",
-                    s => config.LineEnding = Parser.ParseLineEnding(s))
-
-                .Add(
-                    "config=",
-                    "configuration file to use for all settings.",
-                    s => configFile.FileInfo = !string.IsNullOrWhiteSpace(s) ? new FileInfo(StripQuotes(s)) : null);
+            var optionD = new Option<string>(aliases: new[] { "--dbms", "-d" },
+                description: "DBMS type ('mssql', 'mysql' or 'ora')");
+            var optionC = new Option<string>(aliases: new[] { "--connectionstring", "-c" },
+                description: "connection string for database')");
+            var optionS = new Option<string>(aliases: new[] { "--scriptdirectory", "-s" },
+                description: "directory containing change scripts (default: .)')");
+            var optionT = new Option<string>(aliases: new[] { "--changelogtablename", "-t" },
+                description: "name of change log table to use (default: ChangeLog)");
+            var optionO = new Option<string>(aliases: new[] { "--outputfile", "-o" },
+                description: "output file");
+            var optionA = new Option<string>(aliases: new[] { "--autocreatechangelogtable", "-a" },
+                description: "automatically creates the change log table if it does not exist (true or false).  Defaults to true.");
+            var optionF = new Option<string>(aliases: new[] { "--forceupdate", "-f" },
+                description: "forces previously failed scripts to be run again (true or false).  Defaults to false.");
+            var optionU = new Option<string>(aliases: new[] { "--usesqlcmd", "-u" },
+                description: "runs scripts in SQLCMD mode (true or false).  Defaults to false.");
             
-            return options;
+            var optionL = new Option<string>(aliases: new[] { "--lastchangetoapply", "-l" }, description: "sets the last change to apply in the form of folder/scriptnumber (v1.0.0/4).");
+            var optionE = new Option<string>(aliases: new[] { "--encoding", "-e" }, description: "encoding for input and output files (default: UTF-8)");
+            var optionTemplate = new Option<string>(aliases: new[] { "--templatedirectory" }, description: "template directory");
+            var optionDelimiter = new Option<string>(aliases: new[] { "--delimiter" }, description: "delimiter to separate sql statements");
+            var optionDelimiterType = new Option<string>(aliases: new[] { "--delimitertype" }, description: "delimiter type to separate sql statements (row or normal)");
+            var optionLineEnding = new Option<string>(aliases: new[] { "--lineending" }, description: "line ending to use when applying scripts direct to db (platform, cr, crlf, lf)");
+            var optionConfig = new Option<string>(aliases: new[] { "--config" }, description: "configuration file to use for all settings.");
+
+            RootCommand rootCommand = new RootCommand("Converts an image file from one format to another.")
+            {
+                optionD,
+                optionC,
+                optionS,
+                optionO,
+                optionT,
+                optionA,
+                optionF,
+                optionU,
+                optionL,
+                optionE,
+                optionTemplate,
+                optionDelimiter,
+                optionDelimiterType,
+                optionLineEnding,
+                optionConfig
+            };
+            rootCommand.SetHandler(s => config.Dbms = s, optionD);
+            rootCommand.SetHandler(s => config.ConnectionString = StripQuotes(s), optionD);
+            rootCommand.SetHandler(s => config.ScriptDirectory = new DirectoryInfo(StripQuotes(s)), optionS);
+            rootCommand.SetHandler(s => config.ChangeLogTableName = StripQuotes(s),optionT);
+            rootCommand.SetHandler(s => config.OutputFile = new FileInfo(StripQuotes(s)),optionO);
+            rootCommand.SetHandler(s => config.AutoCreateChangeLogTable = s.ToLowerInvariant() != "false" ,optionA);
+            rootCommand.SetHandler(s => config.ForceUpdate = s.ToLowerInvariant() == "true", optionF);
+            rootCommand.SetHandler(s => config.UseSqlCmd = s.ToLowerInvariant() == "true", optionU);
+                
+            
+            rootCommand.SetHandler(s => config.LastChangeToApply = !string.IsNullOrWhiteSpace(s) ? new UniqueChange(s) : null, optionL);
+            rootCommand.SetHandler(s => config.Encoding = new OutputFileEncoding(StripQuotes(s)).AsEncoding(), optionE);
+            rootCommand.SetHandler(s => config.TemplateDirectory = new DirectoryInfo(StripQuotes(s)), optionTemplate);
+            rootCommand.SetHandler(s => config.Delimiter = s, optionDelimiter);
+            rootCommand.SetHandler(s => config.DelimiterType = Parser.ParseDelimiterType(s), optionDelimiterType);
+            rootCommand.SetHandler(s => config.LineEnding = Parser.ParseLineEnding(s), optionLineEnding);
+            rootCommand.SetHandler(s => configFile.FileInfo = !string.IsNullOrWhiteSpace(s) ? new FileInfo(StripQuotes(s)) : null, optionConfig);
+                
+            return rootCommand;
         }
 
         /// <summary>
@@ -174,8 +149,10 @@
             {
                 value = value.Trim();
 
-                if ((value.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && value.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
-                    || (value.StartsWith("'", StringComparison.OrdinalIgnoreCase) && value.EndsWith("'", StringComparison.OrdinalIgnoreCase)))
+                if ((value.StartsWith("\"", StringComparison.OrdinalIgnoreCase) &&
+                     value.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
+                    || (value.StartsWith("'", StringComparison.OrdinalIgnoreCase) &&
+                        value.EndsWith("'", StringComparison.OrdinalIgnoreCase)))
                 {
                     return value.Substring(1, value.Length - 2);
                 }

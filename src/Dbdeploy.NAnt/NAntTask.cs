@@ -6,9 +6,9 @@ namespace Net.Sf.Dbdeploy
     using NAnt.Core;
     using NAnt.Core.Attributes;
 
-    using Net.Sf.Dbdeploy.Configuration;
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Configuration;
+    using Database;
+    using Exceptions;
 
     [TaskName("dbdeploy")]
     public class NAntTask : Task
@@ -17,68 +17,68 @@ namespace Net.Sf.Dbdeploy
 
         public NAntTask()
         {
-            this.config = new DbDeployConfig();
+            config = new DbDeployConfig();
         }
         
         [TaskAttribute("dbType", Required = true)]
         public string DbType
         {
-            set { this.config.Dbms = value; }
+            set { config.Dbms = value; }
         }
         
         [TaskAttribute("dbConnection", Required = true)]
         public string DbConnection
         {
-            set { this.config.ConnectionString = value; }
+            set { config.ConnectionString = value; }
         }
         
         [TaskAttribute("dir", Required = true)]
         public DirectoryInfo Dir
         {
-            get { return this.config.ScriptDirectory; }
-            set { this.config.ScriptDirectory = value; }
+            get { return config.ScriptDirectory; }
+            set { config.ScriptDirectory = value; }
         }
         
         [TaskAttribute("outputFile")]
         public FileInfo OutputFile
         {
-            get { return this.config.OutputFile; }
-            set { this.config.OutputFile = value; }
+            get { return config.OutputFile; }
+            set { config.OutputFile = value; }
         }
         
         [TaskAttribute("encoding")]
         public string OutputEncoding
         {
-            get { return this.config.Encoding.EncodingName; }
-            set { this.config.Encoding = new OutputFileEncoding(value).AsEncoding(); }
+            get { return config.Encoding.EncodingName; }
+            set { config.Encoding = new OutputFileEncoding(value).AsEncoding(); }
         }
         
         [TaskAttribute("undoOutputFile")]
         public FileInfo UndoOutputFile
         {
-            get { return this.config.UndoOutputFile; }
-            set { this.config.UndoOutputFile = value; }
+            get { return config.UndoOutputFile; }
+            set { config.UndoOutputFile = value; }
         }
         
         [TaskAttribute("templateDir")]
         public DirectoryInfo TemplateDir
         {
-            get { return this.config.TemplateDirectory; }
-            set { this.config.TemplateDirectory = value; }
+            get { return config.TemplateDirectory; }
+            set { config.TemplateDirectory = value; }
         }
         
         [TaskAttribute("lastChangeToApply")]
         public string LastChangeToApply
         {
-            get { return this.config.LastChangeToApply != null ? this.config.LastChangeToApply.UniqueKey : string.Empty; }
-            set { this.config.LastChangeToApply = string.IsNullOrWhiteSpace(value) ? null : new UniqueChange(value); }
+            get { return config.LastChangeToApply != null ? config.LastChangeToApply.UniqueKey : string.Empty; }
+            set { config.LastChangeToApply = string.IsNullOrWhiteSpace(value) ? null : new UniqueChange(value); }
         }
         
         [TaskAttribute("changeLogTable")]
         public string ChangeLogTable
         {
-            get { return this.config.ChangeLogTableName; }
-            set { this.config.ChangeLogTableName = value; }
+            get { return config.ChangeLogTableName; }
+            set { config.ChangeLogTableName = value; }
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace Net.Sf.Dbdeploy
         [TaskAttribute("autoCreateChangeLogTable")]
         public bool AutoCreateChangeLogTable
         {
-            get { return this.config.AutoCreateChangeLogTable; }
-            set { this.config.AutoCreateChangeLogTable = value; }
+            get { return config.AutoCreateChangeLogTable; }
+            set { config.AutoCreateChangeLogTable = value; }
         }
 
         /// <summary>
@@ -103,8 +103,8 @@ namespace Net.Sf.Dbdeploy
         [TaskAttribute("forceUpdate")]
         public bool ForceUpdate
         {
-            get { return this.config.ForceUpdate; }
-            set { this.config.ForceUpdate = value; }
+            get { return config.ForceUpdate; }
+            set { config.ForceUpdate = value; }
         }
 
         /// <summary>
@@ -116,22 +116,22 @@ namespace Net.Sf.Dbdeploy
         [TaskAttribute("useSqlCmd")]
         public bool UseSqlCmd
         {
-            get { return this.config.UseSqlCmd; }
-            set { this.config.UseSqlCmd = value; }
+            get { return config.UseSqlCmd; }
+            set { config.UseSqlCmd = value; }
         }
         
         [TaskAttribute("delimiter")]
         public string Delimiter
         {
-            get { return this.config.Delimiter; }
-            set { this.config.Delimiter = value; }
+            get { return config.Delimiter; }
+            set { config.Delimiter = value; }
         }
         
         [TaskAttribute("delimiterType")]
         public string DelimiterType
         {
-            get { return this.config.DelimiterType.GetType().Name; }
-            set { this.config.DelimiterType = DelimiterTypeFactory.Create(value); }
+            get { return config.DelimiterType.GetType().Name; }
+            set { config.DelimiterType = DelimiterTypeFactory.Create(value); }
         }
 
         protected override void ExecuteTask()
@@ -139,13 +139,13 @@ namespace Net.Sf.Dbdeploy
             try
             {
                 var deployer = new DbDeployer();
-                deployer.Execute(this.config, Console.Out);
+                deployer.Execute(config, Console.Out);
             }
             catch (UsageException ex)
             {
                 Console.Error.WriteLine(ex.Message);
 
-                this.PrintUsage();
+                PrintUsage();
             }
             catch (DbDeployException ex)
             {

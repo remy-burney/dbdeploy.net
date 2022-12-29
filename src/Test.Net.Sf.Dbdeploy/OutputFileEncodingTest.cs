@@ -43,7 +43,6 @@ namespace Net.Sf.Dbdeploy
             Assert.AreEqual(Encoding.BigEndianUnicode, new OutputFileEncoding("unicodeFFFE").AsEncoding());
             Assert.AreEqual(Encoding.Unicode, new OutputFileEncoding("utf-16").AsEncoding());
             Assert.AreEqual(Encoding.UTF32, new OutputFileEncoding("utf-32").AsEncoding());
-            Assert.AreEqual(Encoding.UTF7, new OutputFileEncoding("utf-7").AsEncoding());
             Assert.AreEqual(Encoding.UTF8, new OutputFileEncoding("utf-8").AsEncoding());
         }
 

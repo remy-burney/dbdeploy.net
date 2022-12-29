@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using Net.Sf.Dbdeploy.Scripts;
+    using Scripts;
 
     /// <summary>
     /// Provider interface for finding <see cref="ChangeScript"/>s that can be applied.

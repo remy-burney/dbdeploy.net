@@ -7,9 +7,9 @@
     using System.Linq;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Exceptions;
+    using Scripts;
 
     public class DirectToDbApplier : IChangeScriptApplier
     {
@@ -57,28 +57,29 @@
         {
             if (createChangeLogTable)
             {
-                this.infoTextWriter.WriteLine("Creating change log table");
-                this.queryExecuter.Execute(this.dbmsSyntax.CreateChangeLogTableSqlScript(this.changeLogTableName));
+                infoTextWriter.WriteLine("Creating change log table");
+                queryExecuter.Execute(dbmsSyntax.CreateChangeLogTableSqlScript(changeLogTableName));
             }
 
-            this.infoTextWriter.WriteLine(changeScripts.Any() ? "Applying change scripts...\n" : "No changes to apply.\n");
+            var enumerable = changeScripts.ToList();
+            infoTextWriter.WriteLine(enumerable.Any() ? "Applying change scripts...\n" : "No changes to apply.\n");
 
-            foreach (var script in changeScripts)
+            foreach (var script in enumerable)
             {
-                this.RecordScriptStatus(script, ScriptStatus.Started);
+                RecordScriptStatus(script, ScriptStatus.Started);
 
                 // Begin transaction
-                this.queryExecuter.BeginTransaction();
+                queryExecuter.BeginTransaction();
 
-                this.infoTextWriter.WriteLine(script);
-                this.infoTextWriter.WriteLine("----------------------------------------------------------");
+                infoTextWriter.WriteLine(script);
+                infoTextWriter.WriteLine("----------------------------------------------------------");
 
                 // Apply changes and update ChangeLog table
                 var output = new StringBuilder();
                 try
                 {
-                    this.ApplyChangeScript(script, output);
-                    this.RecordScriptStatus(script, ScriptStatus.Success, output.ToString());
+                    ApplyChangeScript(script, output);
+                    RecordScriptStatus(script, ScriptStatus.Success, output.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -87,12 +88,12 @@
                         output.AppendLine(ex.InnerException.Message);
                     }
 
-                    this.RecordScriptStatus(script, ScriptStatus.Failure, output.ToString());
+                    RecordScriptStatus(script, ScriptStatus.Failure, output.ToString());
                     throw;
                 }
 
                 // Commit transaction
-                this.queryExecuter.CommitTransaction();
+                queryExecuter.CommitTransaction();
             }
         }
 
@@ -103,7 +104,7 @@
         /// <param name="output">The output from applying the change script.</param>
         protected void ApplyChangeScript(ChangeScript script, StringBuilder output)
         {
-            ICollection<string> statements = this.splitter.Split(script.GetContent());
+            ICollection<string> statements = splitter.Split(script.GetContent());
 
             int i = 0;
 
@@ -113,10 +114,10 @@
                 {
                     if (statements.Count > 1)
                     {
-                        this.infoTextWriter.WriteLine(" -> statement " + (i + 1) + " of " + statements.Count + "...");
+                        infoTextWriter.WriteLine(" -> statement " + (i + 1) + " of " + statements.Count + "...");
                     }
 
-                    this.queryExecuter.Execute(statement, output);
+                    queryExecuter.Execute(statement, output);
 
                     i++;
                 }
@@ -129,7 +130,7 @@
                     // Write out SQL execution output.
                     if (output.Length > 0)
                     {
-                        this.infoTextWriter.WriteLine(output.ToString());
+                        infoTextWriter.WriteLine(output.ToString());
                     }
                 }
             }
@@ -143,7 +144,7 @@
         /// <param name="output">The output from running the script.</param>
         protected void RecordScriptStatus(ChangeScript changeScript, ScriptStatus status, string output = null) 
         {
-            this.schemaVersionManager.RecordScriptStatus(changeScript, status, output);
+            schemaVersionManager.RecordScriptStatus(changeScript, status, output);
         }
     }
 }

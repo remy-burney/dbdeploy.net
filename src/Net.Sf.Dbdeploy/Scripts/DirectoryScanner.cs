@@ -5,7 +5,7 @@ namespace Net.Sf.Dbdeploy.Scripts
     using System.IO;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Exceptions;
 
     public class DirectoryScanner
     {
@@ -17,7 +17,7 @@ namespace Net.Sf.Dbdeploy.Scripts
 
         public DirectoryScanner(TextWriter infoTextWriter, Encoding encoding)
         {
-            this.filenameParser = new FilenameParser();
+            filenameParser = new FilenameParser();
             
             this.infoTextWriter = infoTextWriter;
             this.encoding = encoding;
@@ -30,7 +30,7 @@ namespace Net.Sf.Dbdeploy.Scripts
 
             try
             {
-                this.infoTextWriter.WriteLine("Reading change scripts from directory '" + directory.FullName + "'...");
+                infoTextWriter.WriteLine("Reading change scripts from directory '" + directory.FullName + "'...");
             }
             catch (IOException)
             {
@@ -48,9 +48,9 @@ namespace Net.Sf.Dbdeploy.Scripts
 
                 try
                 {
-                    int scriptNumber = this.filenameParser.ExtractScriptNumberFromFilename(filename);
+                    int scriptNumber = filenameParser.ExtractScriptNumberFromFilename(filename);
 
-                    scripts.Add(new ChangeScript(file.Directory.Name, scriptNumber, file, this.encoding));
+                    scripts.Add(new ChangeScript(file.Directory.Name, scriptNumber, file, encoding));
                 }
                 catch (UnrecognisedFilenameException)
                 {

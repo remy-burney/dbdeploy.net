@@ -3,7 +3,7 @@
     using System.IO;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Database;
+    using Database;
 
     /// <summary>
     /// Default values for DbDeploy configuration.

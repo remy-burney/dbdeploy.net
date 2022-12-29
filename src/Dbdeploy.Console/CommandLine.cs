@@ -2,7 +2,7 @@ namespace Net.Sf.Dbdeploy
 {
     using System;
 
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Exceptions;
 
     public class CommandLine
     {

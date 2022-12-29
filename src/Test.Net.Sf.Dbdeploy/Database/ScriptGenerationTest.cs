@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using Net.Sf.Dbdeploy.Appliers;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Appliers;
+    using Scripts;
     using NUnit.Framework;
 
     [TestFixture]
@@ -17,9 +17,9 @@
             {
                 try 
                 {
-                    System.Console.WriteLine("Testing syntax {0}\n", syntax);
+                    Console.WriteLine("Testing syntax {0}\n", syntax);
 
-                    this.RunIntegratedTestAndConfirmOutputResults(syntax, new DirectoryInfo(@".\Resources"));
+                    RunIntegratedTestAndConfirmOutputResults(syntax, new DirectoryInfo(@".\Resources"));
                 }
                 catch (Exception e) 
                 {
@@ -35,9 +35,9 @@
             {
                 try 
                 {
-                    System.Console.WriteLine("Testing syntax {0}\n", syntax);
+                    Console.WriteLine("Testing syntax {0}\n", syntax);
 
-                    this.RunIntegratedTestAndConfirmOutputResults(syntax, null);
+                    RunIntegratedTestAndConfirmOutputResults(syntax, null);
                 }
                 catch (Exception e) 
                 {
@@ -63,7 +63,7 @@
             StubSchemaManager schemaManager = new StubSchemaManager(dbmsSyntax, createChangeLogTable);
 
             IChangeScriptApplier applier = new TemplateBasedApplier(writer, dbmsSyntax, "ChangeLog", ";", new NormalDelimiter(), templateDirectory);
-            Controller controller = new Controller(changeScriptRepository, schemaManager, applier, null, createChangeLogTable, System.Console.Out);
+            Controller controller = new Controller(changeScriptRepository, schemaManager, applier, null, createChangeLogTable, Console.Out);
 
             controller.ProcessChangeScripts(null);
 
@@ -71,7 +71,7 @@
 
             try
             {
-                Assert.AreEqual(this.ReadExpectedFileContents(this.GetExpectedFilename(syntaxName)), actual);
+                Assert.AreEqual(ReadExpectedFileContents(GetExpectedFilename(syntaxName)), actual);
             }
             catch (Exception)
             {
@@ -95,7 +95,7 @@
 
             try 
             {
-                return this.ReadEntireStreamIntoAStringWithConversionToSystemDependantLineTerminators(reader);
+                return ReadEntireStreamIntoAStringWithConversionToSystemDependantLineTerminators(reader);
             }
             finally 
             {

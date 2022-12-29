@@ -1,6 +1,6 @@
 ﻿namespace Net.Sf.Dbdeploy.Configuration
 {
-    using Net.Sf.Dbdeploy.Database;
+    using Database;
 
     /// <summary>
     /// Parser for command line arguments.
@@ -19,7 +19,7 @@
                 case "ROW":
                     return new RowDelimiter();
 
-                case "NORMAL":
+                //case "NORMAL":
                 default:
                     return new NormalDelimiter();
             }
@@ -44,7 +44,7 @@
                     return LineEnding.Lf;
 
                 default:
-                case "PLATFORM":
+                //case "PLATFORM":
                     return LineEnding.Platform;
             }
         }

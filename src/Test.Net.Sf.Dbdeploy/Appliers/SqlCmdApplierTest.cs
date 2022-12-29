@@ -1,15 +1,16 @@
-﻿namespace Net.Sf.Dbdeploy.Appliers
+﻿using Microsoft.Data.SqlClient;
+
+namespace Net.Sf.Dbdeploy.Appliers
 {
     using System.Configuration;
     using System.Data;
-    using System.Data.SqlClient;
     using System.Globalization;
     using System.IO;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Exceptions;
+    using Scripts;
 
     using NUnit.Framework;
 
@@ -55,12 +56,12 @@
             var dbmsSyntax = dbmsFactory.CreateDbmsSyntax();
 
             var schemaVersionManager = new DatabaseSchemaVersionManager(queryExecuter, dbmsSyntax, ChangeLogTableName);
-            this.sqlCmdApplier = new SqlCmdApplier(ConnectionString, schemaVersionManager, dbmsSyntax, ChangeLogTableName, System.Console.Out);
-            this.directoryScanner = new DirectoryScanner(System.Console.Out, Encoding.UTF8);
+            sqlCmdApplier = new SqlCmdApplier(ConnectionString, schemaVersionManager, dbmsSyntax, ChangeLogTableName, System.Console.Out);
+            directoryScanner = new DirectoryScanner(System.Console.Out, Encoding.UTF8);
 
             // Remove any existing changelog and customers test table.
-            this.EnsureTableDoesNotExist(ChangeLogTableName);
-            this.EnsureTableDoesNotExist("Customer");
+            EnsureTableDoesNotExist(ChangeLogTableName);
+            EnsureTableDoesNotExist("Customer");
         }
 
         /// <summary>
@@ -69,13 +70,13 @@
         [Test]
         public void ShouldApplySqlCmdModeScripts()
         {
-            var changeScripts = this.directoryScanner.GetChangeScriptsForDirectory(new DirectoryInfo(@"Mocks\Versioned\v2.0.10.0"));
-            this.sqlCmdApplier.Apply(changeScripts, true);
+            var changeScripts = directoryScanner.GetChangeScriptsForDirectory(new DirectoryInfo(@"Mocks\Versioned\v2.0.10.0"));
+            sqlCmdApplier.Apply(changeScripts, true);
 
-            this.AssertTableExists(ChangeLogTableName);
-            this.AssertTableExists("Customer");
+            AssertTableExists(ChangeLogTableName);
+            AssertTableExists("Customer");
 
-            var changeCount = this.ExecuteScalar<int>("SELECT COUNT(*) FROM {0}", ChangeLogTableName);
+            var changeCount = ExecuteScalar<int>("SELECT COUNT(*) FROM {0}", ChangeLogTableName);
             Assert.AreEqual(changeScripts.Count, changeCount, "Not all change scripts where applied.");
         }
 
@@ -86,18 +87,18 @@
         public void ShouldThrowExceptionOnScriptFailure()
         {
             // Duplicate the first script to cause a failure.
-            var changeScripts = this.directoryScanner.GetChangeScriptsForDirectory(new DirectoryInfo(@"Mocks\Failures"));
+            var changeScripts = directoryScanner.GetChangeScriptsForDirectory(new DirectoryInfo(@"Mocks\Failures"));
 
             try
             {
-                this.sqlCmdApplier.Apply(changeScripts, true);
+                sqlCmdApplier.Apply(changeScripts, true);
                 Assert.Fail("Apply did not thrown and error.");
             }
             catch (DbDeployException)
             {
             }
 
-            var changeCount = this.ExecuteScalar<int>("SELECT COUNT(*) FROM {0}", ChangeLogTableName);
+            var changeCount = ExecuteScalar<int>("SELECT COUNT(*) FROM {0}", ChangeLogTableName);
             Assert.AreEqual(2, changeCount, "Only two scripts should have run.");
         }
 
@@ -108,7 +109,7 @@
         private void AssertTableExists(string name)
         {
             var syntax = new MsSqlDbmsSyntax();
-            var schema = this.ExecuteScalar<string>(syntax.TableExists(name));
+            var schema = ExecuteScalar<string>(syntax.TableExists(name));
 
             Assert.IsNotEmpty(schema, "'{0}' table was not created.", name);            
         }
@@ -119,7 +120,7 @@
         /// <param name="name">The name.</param>
         private void EnsureTableDoesNotExist(string name)
         {
-            this.ExecuteSql(string.Format(CultureInfo.InvariantCulture, 
+            ExecuteSql(string.Format(CultureInfo.InvariantCulture, 
 @"IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[{0}]') AND TYPE IN (N'U'))
 DROP TABLE [dbo].[{0}]", name));
         }
@@ -130,7 +131,7 @@ DROP TABLE [dbo].[{0}]", name));
         /// <param name="sql">The SQL.</param>
         private void ExecuteSql(string sql)
         {
-            using (var connection = this.GetConnection())
+            using (var connection = GetConnection())
             {
                 connection.Open();
                 var command = connection.CreateCommand();
@@ -151,7 +152,7 @@ DROP TABLE [dbo].[{0}]", name));
         private T ExecuteScalar<T>(string sql, params object[] args)
         {
             T result;
-            using (var connection = this.GetConnection())
+            using (var connection = GetConnection())
             {
                 connection.Open();
                 var command = connection.CreateCommand();

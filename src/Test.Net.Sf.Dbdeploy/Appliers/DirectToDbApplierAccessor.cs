@@ -3,8 +3,8 @@
     using System.IO;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Scripts;
 
     internal class DirectToDbApplierAccessor : DirectToDbApplier
     {

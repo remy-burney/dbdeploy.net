@@ -17,14 +17,14 @@ namespace Net.Sf.Dbdeploy
             if (string.IsNullOrEmpty(encoding))
                 return Encoding.Default;
 
-            return this.GetEncoding();
+            return GetEncoding();
         }
 
         public bool IsValid()
         {
             try
             {
-                this.GetEncoding();
+                GetEncoding();
 
                 return true;
             }

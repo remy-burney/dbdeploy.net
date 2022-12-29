@@ -7,9 +7,9 @@ namespace Net.Sf.Dbdeploy
 
     using Moq;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Exceptions;
+    using Scripts;
 
     using NUnit.Framework;
 
@@ -56,8 +56,8 @@ namespace Net.Sf.Dbdeploy
         public void Setup()
         {
             // Setup default available scripts.
-            this.availableChangeScriptsProvider = new Mock<IAvailableChangeScriptsProvider>();
-            this.availableChangeScriptsProvider.Setup(p => p.GetAvailableChangeScripts())
+            availableChangeScriptsProvider = new Mock<IAvailableChangeScriptsProvider>();
+            availableChangeScriptsProvider.Setup(p => p.GetAvailableChangeScripts())
                 .Returns(new List<ChangeScript>
                         {
                             new ChangeScript("1.0", 1),
@@ -69,16 +69,16 @@ namespace Net.Sf.Dbdeploy
                         });
 
             // Capture changes that would be run.
-            this.runScripts = new List<ChangeScript>();
-            this.doApplier = new Mock<IChangeScriptApplier>();
-            this.doApplier
+            runScripts = new List<ChangeScript>();
+            doApplier = new Mock<IChangeScriptApplier>();
+            doApplier
                 .Setup(a => a.Apply(It.IsAny<IEnumerable<ChangeScript>>(), false))
-                .Callback<IEnumerable<ChangeScript>, bool>((l,b) => this.runScripts = l.ToList());
+                .Callback<IEnumerable<ChangeScript>, bool>((l,b) => runScripts = l.ToList());
 
-            this.appliedChangesProvider = new Mock<IAppliedChangesProvider>();
+            appliedChangesProvider = new Mock<IAppliedChangesProvider>();
             var undoApplier = new Mock<IChangeScriptApplier>();
-            this.output = new StringBuilder();
-            this.controller = new Controller(this.availableChangeScriptsProvider.Object, this.appliedChangesProvider.Object, this.doApplier.Object, undoApplier.Object, false, new StringWriter(this.output));
+            output = new StringBuilder();
+            controller = new Controller(availableChangeScriptsProvider.Object, appliedChangesProvider.Object, doApplier.Object, undoApplier.Object, false, new StringWriter(output));
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Net.Sf.Dbdeploy
         public void ShouldThrowErrorWhenPreviousScriptRunFailed()
         {
             // Setup script already run.
-            this.appliedChangesProvider
+            appliedChangesProvider
                 .Setup(p => p.GetAppliedChanges())
                 .Returns(new List<ChangeEntry>
                         {
@@ -98,7 +98,7 @@ namespace Net.Sf.Dbdeploy
                         });
 
             // Execute controller.
-            this.controller.ProcessChangeScripts(null);
+            controller.ProcessChangeScripts(null);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Net.Sf.Dbdeploy
         public void ShouldApplyScriptsNotRunToDatabase()
         {
             // Setup script already run.
-            this.appliedChangesProvider
+            appliedChangesProvider
                 .Setup(p => p.GetAppliedChanges())
                 .Returns(new List<ChangeEntry>
                         {
@@ -117,10 +117,10 @@ namespace Net.Sf.Dbdeploy
                         });
 
             // Execute controller.
-            this.controller.ProcessChangeScripts(null);
+            controller.ProcessChangeScripts(null);
 
             // Verify scripts attempted.
-            AssertRunScripts(this.runScripts, "1.0/3", "1.0/4", "1.1/1", "1.1/2");
+            AssertRunScripts(runScripts, "1.0/3", "1.0/4", "1.1/1", "1.1/2");
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Net.Sf.Dbdeploy
         public void ShouldApplyScriptsMarkedAsResolved()
         {
             // Setup script already run.
-            this.appliedChangesProvider
+            appliedChangesProvider
                 .Setup(p => p.GetAppliedChanges())
                 .Returns(new List<ChangeEntry>
                         {
@@ -140,10 +140,10 @@ namespace Net.Sf.Dbdeploy
                         });
 
             // Execute controller.
-            this.controller.ProcessChangeScripts(null);
+            controller.ProcessChangeScripts(null);
 
             // Verify scripts attempted.
-            AssertRunScripts(this.runScripts, "1.0/3", "1.0/4", "1.1/1", "1.1/2");
+            AssertRunScripts(runScripts, "1.0/3", "1.0/4", "1.1/1", "1.1/2");
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Net.Sf.Dbdeploy
         public void ShouldApplyScriptsMarkedAsFailedWhenForceUpdateIsSet()
         {
             // Setup script already run.
-            this.appliedChangesProvider
+            appliedChangesProvider
                 .Setup(p => p.GetAppliedChanges())
                 .Returns(new List<ChangeEntry>
                         {
@@ -163,10 +163,10 @@ namespace Net.Sf.Dbdeploy
                         });
 
             // Execute controller with force update set to true.
-            this.controller.ProcessChangeScripts(null, true);
+            controller.ProcessChangeScripts(null, true);
 
             // Verify scripts attempted.
-            AssertRunScripts(this.runScripts, "1.0/3", "1.0/4", "1.1/1", "1.1/2");
+            AssertRunScripts(runScripts, "1.0/3", "1.0/4", "1.1/1", "1.1/2");
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace Net.Sf.Dbdeploy
         public void ShouldApplyChangesUpToRequestedScript()
         {
             // Setup script already run.
-            this.appliedChangesProvider
+            appliedChangesProvider
                 .Setup(p => p.GetAppliedChanges())
                 .Returns(new List<ChangeEntry>
                         {
@@ -185,10 +185,10 @@ namespace Net.Sf.Dbdeploy
                         });
 
             // Execute controller with force update set to true.
-            this.controller.ProcessChangeScripts(new UniqueChange("1.1", 1), true);
+            controller.ProcessChangeScripts(new UniqueChange("1.1", 1), true);
 
             // Verify scripts attempted.
-            AssertRunScripts(this.runScripts, "1.0/3", "1.0/4", "1.1/1");
+            AssertRunScripts(runScripts, "1.0/3", "1.0/4", "1.1/1");
         }
 
         /// <summary>

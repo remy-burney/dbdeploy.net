@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Database;
+    using Exceptions;
 
     /// <summary>
     /// Interface for provider to retrieve changes that have been applied to the database.

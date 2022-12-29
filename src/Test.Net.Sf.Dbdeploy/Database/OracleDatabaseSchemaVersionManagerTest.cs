@@ -1,12 +1,13 @@
 using System;
 
+
 namespace Net.Sf.Dbdeploy.Database
 {
     using System.Collections.Generic;
     using System.Configuration;
     using System.Data;
-    using System.Data.OracleClient;
     using System.Text;
+    using Oracle.ManagedDataAccess.Client;
     using NUnit.Framework;
 
 	[Category("Oracle"), Category("DbIntegration")]
@@ -81,7 +82,7 @@ namespace Net.Sf.Dbdeploy.Database
 		[Test]
 		public void ShouldNotThrowExceptionIfAllPreviousScriptsAreCompleted()
 		{
-			this.EnsureTableDoesNotExist();
+			EnsureTableDoesNotExist();
 			CreateTable();
 			InsertRowIntoTable(3);
 			var changeNumbers = new List<ChangeEntry>(databaseSchemaVersion.GetAppliedChanges());

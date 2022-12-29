@@ -7,7 +7,7 @@
 
     using Moq;
 
-    using Net.Sf.Dbdeploy.Scripts;
+    using Scripts;
 
     using NUnit.Framework;
 
@@ -32,41 +32,41 @@
         [SetUp]
         public void SetUp() 
         {
-            this.changeLogTableName = "ChangeLog";
+            changeLogTableName = "ChangeLog";
 
-            this.expectedResultSet = new Mock<IDataReader>();
+            expectedResultSet = new Mock<IDataReader>();
 
             var connection = new Mock<IDbConnection>();
 
             var factory = new Mock<DbmsFactory>("mssql", string.Empty);
             factory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         
-            this.queryExecuter = new Mock<QueryExecuter>(factory.Object);
+            queryExecuter = new Mock<QueryExecuter>(factory.Object);
 
-            this.syntax = new Mock<IDbmsSyntax>();
-            this.syntax.Setup(s => s.TableExists(It.IsAny<string>()))
+            syntax = new Mock<IDbmsSyntax>();
+            syntax.Setup(s => s.TableExists(It.IsAny<string>()))
                 .Returns<string>(t => string.Format(CultureInfo.InvariantCulture,
 @"SELECT table_schema 
 FROM INFORMATION_SCHEMA.TABLES 
 WHERE TABLE_NAME = '{0}'", t));
 
-            this.executedQueries = new List<string>();
+            executedQueries = new List<string>();
 
             var checkForChangeLogDataReader = new Mock<IDataReader>();
             checkForChangeLogDataReader
                 .Setup(r => r.Read())
                 .Returns(true);
 
-            this.queryExecuter
+            queryExecuter
                 .Setup(e => e.ExecuteQuery(It.Is<string>(v => v.Contains("INFORMATION_SCHEMA"))))
                 .Returns(() => checkForChangeLogDataReader.Object);
 
-            this.queryExecuter
+            queryExecuter
                 .Setup(e => e.ExecuteQuery(It.Is<string>(v => !v.Contains("INFORMATION_SCHEMA")), It.IsAny<object[]>()))
-                .Returns(this.expectedResultSet.Object)
-                .Callback<string, object[]>((q, a) => this.executedQueries.Add(q));
+                .Returns(expectedResultSet.Object)
+                .Callback<string, object[]>((q, a) => executedQueries.Add(q));
 
-            this.schemaVersionManager = new DatabaseSchemaVersionManager(this.queryExecuter.Object, this.syntax.Object, changeLogTableName);
+            schemaVersionManager = new DatabaseSchemaVersionManager(queryExecuter.Object, syntax.Object, changeLogTableName);
         }
 
         [Test]
@@ -100,20 +100,20 @@ WHERE TABLE_NAME = '{0}'", t));
                                  };
             var getEnumerator = getResults.GetEnumerator();
 
-            this.expectedResultSet.Setup(rs => rs.Read()).Returns(() =>
+            expectedResultSet.Setup(rs => rs.Read()).Returns(() =>
             {
                 readEnumerator.MoveNext();
                 getEnumerator.MoveNext();
                 return readEnumerator.Current;
             });
-            this.expectedResultSet.Setup(rs => rs["Folder"]).Returns(() => getEnumerator.Current.Folder);
-            this.expectedResultSet.Setup(rs => rs["ScriptNumber"]).Returns(() => (short)getEnumerator.Current.ScriptNumber);
-            this.expectedResultSet.Setup(rs => rs["ChangeId"]).Returns(() => getEnumerator.Current.ChangeId);
-            this.expectedResultSet.Setup(rs => rs["ScriptName"]).Returns(() => getEnumerator.Current.ScriptName);
-            this.expectedResultSet.Setup(rs => rs["ScriptStatus"]).Returns(() => (byte)getEnumerator.Current.Status);
-            this.expectedResultSet.Setup(rs => rs["ScriptOutput"]).Returns(() => getEnumerator.Current.Output);
+            expectedResultSet.Setup(rs => rs["Folder"]).Returns(() => getEnumerator.Current.Folder);
+            expectedResultSet.Setup(rs => rs["ScriptNumber"]).Returns(() => (short)getEnumerator.Current.ScriptNumber);
+            expectedResultSet.Setup(rs => rs["ChangeId"]).Returns(() => getEnumerator.Current.ChangeId);
+            expectedResultSet.Setup(rs => rs["ScriptName"]).Returns(() => getEnumerator.Current.ScriptName);
+            expectedResultSet.Setup(rs => rs["ScriptStatus"]).Returns(() => (byte)getEnumerator.Current.Status);
+            expectedResultSet.Setup(rs => rs["ScriptOutput"]).Returns(() => getEnumerator.Current.Output);
 
-            var changes = this.schemaVersionManager.GetAppliedChanges().ToList();
+            var changes = schemaVersionManager.GetAppliedChanges().ToList();
         
             Assert.AreEqual(3, changes.Count, "Incorrect number of changes found.");
             for (int i = 0; i < getResults.Count; i++)
@@ -125,22 +125,22 @@ WHERE TABLE_NAME = '{0}'", t));
         [Test]
         public void ShouldUpdateChangelogTable() 
         {
-            this.syntax.Setup(s => s.CurrentUser).Returns("DBUSER");
-            this.syntax.Setup(s => s.CurrentTimestamp).Returns("TIMESTAMP");
+            syntax.Setup(s => s.CurrentUser).Returns("DBUSER");
+            syntax.Setup(s => s.CurrentTimestamp).Returns("TIMESTAMP");
 
-            this.schemaVersionManager.RecordScriptStatus(this.script, ScriptStatus.Success, "Script output");
+            schemaVersionManager.RecordScriptStatus(script, ScriptStatus.Success, "Script output");
             string expected = @"INSERT INTO ChangeLog (Folder, ScriptNumber, ScriptName, StartDate, CompleteDate, AppliedBy, ScriptStatus, ScriptOutput) VALUES (@1, @2, @3, TIMESTAMP, TIMESTAMP, DBUSER, @4, @5) 
 SELECT ChangeId FROM ChangeLog WHERE Folder = @1 and ScriptNumber = @2";
 
-            Assert.AreEqual(expected, this.executedQueries.FirstOrDefault(), "The query executed was incorrect.");
+            Assert.AreEqual(expected, executedQueries.FirstOrDefault(), "The query executed was incorrect.");
 
-            this.queryExecuter.Verify(e => e.ExecuteQuery(expected, this.script.Folder, this.script.ScriptNumber, this.script.ScriptName, (int)ScriptStatus.Success, "Script output"), Times.Once());
+            queryExecuter.Verify(e => e.ExecuteQuery(expected, script.Folder, script.ScriptNumber, script.ScriptName, (int)ScriptStatus.Success, "Script output"), Times.Once());
         }
 
         [Test]
         public void ShouldGenerateSqlStringToDeleteChangelogTableAfterUndoScriptApplication() 
         {
-            string sql = this.schemaVersionManager.GetChangelogDeleteSql(this.script);
+            string sql = schemaVersionManager.GetChangelogDeleteSql(script);
             string expected = "DELETE FROM ChangeLog WHERE Folder = 'Alpha' AND ScriptNumber = 99";
 
             Assert.AreEqual(expected, sql);
@@ -152,20 +152,20 @@ SELECT ChangeId FROM ChangeLog WHERE Folder = @1 and ScriptNumber = @2";
             changeLogTableName = "user_specified_changelog";
 
             var schemaVersionManagerWithDifferentTableName =
-                new DatabaseSchemaVersionManager(this.queryExecuter.Object, this.syntax.Object, changeLogTableName);
+                new DatabaseSchemaVersionManager(queryExecuter.Object, syntax.Object, changeLogTableName);
 
             schemaVersionManagerWithDifferentTableName.GetAppliedChanges();
 
-            this.queryExecuter.Verify(e => e.ExecuteQuery(It.Is<string>(s => s.StartsWith("SELECT ChangeId, Folder, ScriptNumber, ScriptName, ScriptStatus, ScriptOutput FROM user_specified_changelog"))));
+            queryExecuter.Verify(e => e.ExecuteQuery(It.Is<string>(s => s.StartsWith("SELECT ChangeId, Folder, ScriptNumber, ScriptName, ScriptStatus, ScriptOutput FROM user_specified_changelog"))));
         }
 
         [Test]
         public void ShouldGenerateSqlStringContainingSpecifiedChangelogTableNameOnDelete() 
         {
             var schemaVersionManagerWithDifferentTableName =
-                new DatabaseSchemaVersionManager(this.queryExecuter.Object, this.syntax.Object, "user_specified_changelog");
+                new DatabaseSchemaVersionManager(queryExecuter.Object, syntax.Object, "user_specified_changelog");
 
-            string updateSql = schemaVersionManagerWithDifferentTableName.GetChangelogDeleteSql(this.script);
+            string updateSql = schemaVersionManagerWithDifferentTableName.GetChangelogDeleteSql(script);
 
             Assert.IsTrue(updateSql.StartsWith("DELETE FROM user_specified_changelog "));
         }

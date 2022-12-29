@@ -5,9 +5,9 @@ namespace Net.Sf.Dbdeploy
     using System.IO;
     using System.Linq;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Exceptions;
+    using Scripts;
 
     /// <summary>
     /// Primary controller for executing DbDeploy.
@@ -17,7 +17,7 @@ namespace Net.Sf.Dbdeploy
         /// <summary>
         /// The writer for displaying information to the user.
         /// </summary>
-        private static TextWriter infoWriter;
+        private static TextWriter _infoWriter;
 
         /// <summary>
         /// The available change scripts provider.
@@ -71,7 +71,7 @@ namespace Net.Sf.Dbdeploy
 
             this.availableChangeScriptsProvider = availableChangeScriptsProvider;
             
-            infoWriter = infoTextWriter;
+            _infoWriter = infoTextWriter;
         }
 
         /// <summary>
@@ -86,30 +86,30 @@ namespace Net.Sf.Dbdeploy
                 Info("\nOnly applying changes up to and including change script '{0}'.\n", lastChangeToApply);
             }
             
-            var applied = this.appliedChangesProvider.GetAppliedChanges();
+            var applied = appliedChangesProvider.GetAppliedChanges();
 
             // If force update is not set, than if there are any previous script runs that failed it should stop.
             if (!forceUpdate)
             {
-                this.CheckForFailedScripts(applied);
+                CheckForFailedScripts(applied);
             }
 
-            var scripts = this.availableChangeScriptsProvider.GetAvailableChangeScripts();
-            var toApply = this.IdentifyChangesToApply(lastChangeToApply, scripts, applied);
+            var scripts = availableChangeScriptsProvider.GetAvailableChangeScripts();
+            var toApply = IdentifyChangesToApply(lastChangeToApply, scripts, applied);
 
-            this.LogStatus(scripts, applied, toApply);
+            LogStatus(scripts, applied, toApply);
 
-            var includeChangeLogTable = this.createChangeLogTable && !this.appliedChangesProvider.ChangeLogTableExists();
-            this.doApplier.Apply(toApply, includeChangeLogTable);
+            var includeChangeLogTable = createChangeLogTable && !appliedChangesProvider.ChangeLogTableExists();
+            doApplier.Apply(toApply, includeChangeLogTable);
 
-            if (this.undoApplier != null)
+            if (undoApplier != null)
             {
                 Info("Generating undo scripts...");
 
                 var toUndoApply = new List<ChangeScript>(toApply);
                 toUndoApply.Reverse();
 
-                this.undoApplier.Apply(toUndoApply, false);
+                undoApplier.Apply(toUndoApply, false);
             }
 
             if (toApply.Any())
@@ -125,7 +125,7 @@ namespace Net.Sf.Dbdeploy
         /// <param name="args">The args to format into the message.</param>
         private static void Info(string text, params object[] args)
         {
-            infoWriter.WriteLine(text, args);
+            _infoWriter.WriteLine(text, args);
         }
 
         /// <summary>
@@ -138,14 +138,14 @@ namespace Net.Sf.Dbdeploy
             var failedScript = applied.FirstOrDefault(a => a.Status == ScriptStatus.Failure);
             if (failedScript != null)
             {
-                const string FailedMessage = @"
+                const string failedMessage = @"
 The script '{0}' failed to complete on a previous run. 
 You must update the status to Resolved (2), or force updates.
 
 Output from the previous run
 ----------------------------------------------------------
 {1}";
-                throw new PriorFailedScriptException(string.Format(CultureInfo.InvariantCulture, FailedMessage, failedScript, failedScript.Output));
+                throw new PriorFailedScriptException(string.Format(CultureInfo.InvariantCulture, failedMessage, failedScript, failedScript.Output));
             }
         }
 
@@ -158,9 +158,9 @@ Output from the previous run
         private void LogStatus(IEnumerable<ChangeScript> scripts, IEnumerable<ChangeEntry> applied, IEnumerable<ChangeScript> toApply)
         {
             Info(string.Empty);
-            Info("Changes currently applied to database:\n" + this.prettyPrinter.Format(applied));
-            Info("Scripts available:\n" + this.prettyPrinter.Format(scripts));
-            Info("To be applied:\n" + this.prettyPrinter.Format(toApply));
+            Info("Changes currently applied to database:\n" + prettyPrinter.Format(applied));
+            Info("Scripts available:\n" + prettyPrinter.Format(scripts));
+            Info("To be applied:\n" + prettyPrinter.Format(toApply));
             Info(string.Empty);
         }
 

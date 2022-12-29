@@ -3,13 +3,11 @@
     using System;
     using System.IO;
     using System.Reflection;
-    using System.Text;
-
-    using Net.Sf.Dbdeploy.Appliers;
-    using Net.Sf.Dbdeploy.Configuration;
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Appliers;
+    using Configuration;
+    using Database;
+    using Exceptions;
+    using Scripts;
 
     /// <summary>
     /// Main class for running database deployment.
@@ -22,7 +20,7 @@
         /// <returns>Welcome message.</returns>
         public string GenerateWelcomeString()
         {
-            Version version = Assembly.GetAssembly(this.GetType()).GetName().Version;
+            Version version = Assembly.GetAssembly(GetType()).GetName().Version;
             
             return "dbdeploy.net " + version;
         }
@@ -35,11 +33,11 @@
         /// <exception cref="System.InvalidOperationException">SQLCMD mode can only be applied against an mssql database.</exception>
         public void Execute(DbDeployConfig config, TextWriter infoWriter)
         {
-            this.Validate(config, infoWriter);
+            Validate(config, infoWriter);
 
             infoWriter.WriteLine();
             infoWriter.WriteLine("==========================================================");
-            infoWriter.WriteLine(this.GenerateWelcomeString());
+            infoWriter.WriteLine(GenerateWelcomeString());
 
             var factory = new DbmsFactory(config.Dbms, config.ConnectionString);
             
@@ -161,10 +159,10 @@
         /// <exception cref="UsageException">Script directory must point to a valid directory</exception>
         private void Validate(DbDeployConfig config, TextWriter infoWriter)
         {
-            this.CheckForRequiredParameter(config.Dbms, "dbms");
-            this.CheckForRequiredParameter(config.ConnectionString, "connectionString");
-            this.CheckForRequiredParameter(config.ScriptDirectory, "dir");
-            this.CheckForRequiredParameter(infoWriter, "infoWriter");
+            CheckForRequiredParameter(config.Dbms, "dbms");
+            CheckForRequiredParameter(config.ConnectionString, "connectionString");
+            CheckForRequiredParameter(config.ScriptDirectory, "dir");
+            CheckForRequiredParameter(infoWriter, "infoWriter");
 
             if (config.ScriptDirectory == null || !config.ScriptDirectory.Exists) 
             {

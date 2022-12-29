@@ -1,13 +1,12 @@
 ﻿namespace Net.Sf.Dbdeploy.Database.SqlCmd
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Appliers;
+    using Appliers;
 
     using System.Diagnostics;
 
@@ -83,7 +82,7 @@
                     UseShellExecute = false,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = GetResourceFilePath(SqlCmdFileName),
-                    Arguments = BuildCommandArguments(this.connectionString, file),
+                    Arguments = BuildCommandArguments(connectionString, file),
                     RedirectStandardError = true,
                     RedirectStandardOutput = true
                 };

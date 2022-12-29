@@ -52,7 +52,7 @@ namespace Net.Sf.Dbdeploy
                     }
                 }
 
-                this.AppendRange(builder, lastRangeStart.Value, lastNumber.Value, isFirst);
+                AppendRange(builder, lastRangeStart.Value, lastNumber.Value, isFirst);
             }
 
             return builder.ToString();
@@ -77,16 +77,16 @@ namespace Net.Sf.Dbdeploy
         {
             if (lastRangeStart == lastNumber)
             {
-                this.AppendWithPossibleComma(builder, lastNumber, isFirst);
+                AppendWithPossibleComma(builder, lastNumber, isFirst);
             }
             else if (lastRangeStart + 1 == lastNumber)
             {
-                this.AppendWithPossibleComma(builder, lastRangeStart, isFirst);
-                this.AppendWithPossibleComma(builder, lastNumber, false);
+                AppendWithPossibleComma(builder, lastRangeStart, isFirst);
+                AppendWithPossibleComma(builder, lastNumber, false);
             }
             else
             {
-                this.AppendWithPossibleComma(builder, lastRangeStart + ".." + lastNumber, isFirst);
+                AppendWithPossibleComma(builder, lastRangeStart + ".." + lastNumber, isFirst);
             }
         }
 

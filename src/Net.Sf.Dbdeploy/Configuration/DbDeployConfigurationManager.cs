@@ -20,7 +20,7 @@
             DbDeploymentsConfig config;
             using (var reader = new StreamReader(File.OpenRead(xmlFilePath)))
             {
-                config = this.ReadConfiguration(reader, Path.GetDirectoryName(xmlFilePath));
+                config = ReadConfiguration(reader, Path.GetDirectoryName(xmlFilePath));
             }
 
             return config;
@@ -38,8 +38,10 @@
         {
             var doc = XDocument.Load(xmlFile);
 
-            var deploymentsConfig = new DbDeploymentsConfig();
-            deploymentsConfig.Deployments = doc.Root.Descendants("dbdeploy").Select(e => this.ReadConfigElement(e, rootPath)).ToList();
+            var deploymentsConfig = new DbDeploymentsConfig
+            {
+                Deployments = doc.Root?.Descendants("dbdeploy").Select(e => ReadConfigElement(e, rootPath)).ToList()
+            };
             return deploymentsConfig;
         }
 
@@ -80,7 +82,7 @@
         /// <returns>Full path.</returns>
         private static string ResolveRelativePath(string rootPath, string path)
         {
-            return Path.IsPathRooted(path) ? path : Path.GetFullPath(Path.Combine(rootPath, path));
+            return Path.IsPathRooted(path) ? path : Path.GetFullPath(Path.Combine(rootPath, path ?? string.Empty));
         }
 
         /// <summary>

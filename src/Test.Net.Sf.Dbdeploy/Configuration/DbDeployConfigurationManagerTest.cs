@@ -1,12 +1,11 @@
 namespace Net.Sf.Dbdeploy.Configuration
 {
-    using System;
     using System.Linq;
     using System.Text;
 
     using NUnit.Framework;
 
-    using Net.Sf.Dbdeploy.Database;
+    using Database;
 
     /// <summary>
     /// Unit tests for XML configuration.
@@ -25,7 +24,7 @@ namespace Net.Sf.Dbdeploy.Configuration
         [SetUp]
         protected void SetUp()
         {
-            this.configurationManager = new DbDeployConfigurationManager();
+            configurationManager = new DbDeployConfigurationManager();
         }
 
         /// <summary>
@@ -34,7 +33,7 @@ namespace Net.Sf.Dbdeploy.Configuration
         [Test]
         public void ShouldParseXmlIntoDeployments()
         {
-            var config = this.configurationManager.ReadConfiguration(@"Mocks\DbDeploy.config.xml");
+            var config = configurationManager.ReadConfiguration(@"Mocks\DbDeploy.config.xml");
 
             Assert.IsNotNull(config.Deployments, "Deployments should not be null.");
             Assert.Greater(config.Deployments.Count, 0, "There should be some deployment items.");

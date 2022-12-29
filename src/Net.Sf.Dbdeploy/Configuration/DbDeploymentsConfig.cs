@@ -12,7 +12,7 @@
         /// </summary>
         public DbDeploymentsConfig()
         {
-            this.Deployments = new List<DbDeployConfig>();
+            Deployments = new List<DbDeployConfig>();
         }
 
         /// <summary>

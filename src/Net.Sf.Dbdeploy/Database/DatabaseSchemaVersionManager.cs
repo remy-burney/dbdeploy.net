@@ -6,8 +6,8 @@ namespace Net.Sf.Dbdeploy.Database
     using System.Data.Common;
     using System.Globalization;
 
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Exceptions;
+    using Scripts;
 
     /// <summary>
     /// Manages updating the change log table in the database, and retrieving applied changes.
@@ -35,7 +35,6 @@ namespace Net.Sf.Dbdeploy.Database
         /// <param name="queryExecuter">The query executer.</param>
         /// <param name="syntax">The syntax.</param>
         /// <param name="changeLogTableName">Name of the change log table.</param>
-        /// <param name="autoCreateChangeLogTable">if set to <c>true</c> the change log table will automatically be created.</param>
         public DatabaseSchemaVersionManager(QueryExecuter queryExecuter, IDbmsSyntax syntax, string changeLogTableName)
         {
             this.syntax = syntax;
@@ -50,7 +49,7 @@ namespace Net.Sf.Dbdeploy.Database
         /// <exception cref="SchemaVersionTrackingException">Could not retrieve change log from database because:  + e.Message</exception>
         public virtual IList<ChangeEntry> GetAppliedChanges()
         {
-            if (!this.ChangeLogTableExists())
+            if (!ChangeLogTableExists())
             {
                 return new List<ChangeEntry>();
             }
@@ -59,9 +58,9 @@ namespace Net.Sf.Dbdeploy.Database
             try
             {
                 // Find all changes that are not resolved.
-                string sql = string.Format(CultureInfo.InvariantCulture, "SELECT ChangeId, Folder, ScriptNumber, ScriptName, ScriptStatus, ScriptOutput FROM {0}", this.changeLogTableName);
+                string sql = string.Format(CultureInfo.InvariantCulture, "SELECT ChangeId, Folder, ScriptNumber, ScriptName, ScriptStatus, ScriptOutput FROM {0}", changeLogTableName);
                 
-                using (var reader = this.queryExecuter.ExecuteQuery(sql))
+                using (var reader = queryExecuter.ExecuteQuery(sql))
                 {
                     while (reader.Read())
                     {
@@ -97,7 +96,7 @@ namespace Net.Sf.Dbdeploy.Database
         /// <exception cref="ChangelogTableDoesNotExistException">Thrown when the change log table is not found.</exception>
         public virtual bool ChangeLogTableExists()
         {
-            using (var reader = this.queryExecuter.ExecuteQuery(this.syntax.TableExists(this.changeLogTableName)))
+            using (var reader = queryExecuter.ExecuteQuery(syntax.TableExists(changeLogTableName)))
             {
                 return reader.Read();
             }
@@ -110,7 +109,7 @@ namespace Net.Sf.Dbdeploy.Database
         /// <returns>SQL to delete the change log entry.</returns>
         public virtual string GetChangelogDeleteSql(ChangeScript script)
         {
-            return string.Format(CultureInfo.InvariantCulture, "DELETE FROM {0} WHERE Folder = '{1}' AND ScriptNumber = {2}", this.changeLogTableName, script.Folder, script.ScriptNumber);
+            return string.Format(CultureInfo.InvariantCulture, "DELETE FROM {0} WHERE Folder = '{1}' AND ScriptNumber = {2}", changeLogTableName, script.Folder, script.ScriptNumber);
         }
 
         /// <summary>
@@ -126,20 +125,20 @@ namespace Net.Sf.Dbdeploy.Database
             {
                 // Insert or update based on if there is a change ID.
                 // Update complete date for all but started.
-                var completeDateValue = status != ScriptStatus.Started ? this.syntax.CurrentTimestamp : "NULL";
+                var completeDateValue = status != ScriptStatus.Started ? syntax.CurrentTimestamp : "NULL";
                 if (script.ChangeId == 0)
                 {
                     var sql = string.Format(
                         CultureInfo.InvariantCulture,
 @"INSERT INTO {0} (Folder, ScriptNumber, ScriptName, StartDate, CompleteDate, AppliedBy, ScriptStatus, ScriptOutput) VALUES (@1, @2, @3, {1}, {2}, {3}, @4, @5) 
 SELECT ChangeId FROM {0} WHERE Folder = @1 and ScriptNumber = @2",
-                        this.changeLogTableName,
-                        this.syntax.CurrentTimestamp,
+                        changeLogTableName,
+                        syntax.CurrentTimestamp,
                         completeDateValue,
-                        this.syntax.CurrentUser);
+                        syntax.CurrentUser);
 
                     // Execute insert and set change id so it can be updated.
-                    using (var reader = this.queryExecuter.ExecuteQuery(sql, script.Folder, script.ScriptNumber, script.ScriptName, (int)status, output ?? string.Empty))
+                    using (var reader = queryExecuter.ExecuteQuery(sql, script.Folder, script.ScriptNumber, script.ScriptName, (int)status, output ?? string.Empty))
                     {
                         reader.Read();
                         script.ChangeId = reader.GetInt32(0);
@@ -151,12 +150,12 @@ SELECT ChangeId FROM {0} WHERE Folder = @1 and ScriptNumber = @2",
                     var sql = string.Format(
                         CultureInfo.InvariantCulture,
                         "UPDATE {0} SET Folder = @1, ScriptNumber = @2, ScriptName = @3, {1}CompleteDate = {2}, AppliedBy = {3}, ScriptStatus = @4, ScriptOutput = @5 WHERE ChangeId = @6",
-                        this.changeLogTableName,
-                        status == ScriptStatus.Started ? string.Format(CultureInfo.InvariantCulture, "StartDate = {0}, ", this.syntax.CurrentTimestamp) : string.Empty,
+                        changeLogTableName,
+                        status == ScriptStatus.Started ? string.Format(CultureInfo.InvariantCulture, "StartDate = {0}, ", syntax.CurrentTimestamp) : string.Empty,
                         completeDateValue,
-                        this.syntax.CurrentUser);
+                        syntax.CurrentUser);
 
-                    this.queryExecuter.Execute(sql, script.Folder, script.ScriptNumber, script.ScriptName, (int)status, output ?? string.Empty, script.ChangeId);
+                    queryExecuter.Execute(sql, script.Folder, script.ScriptNumber, script.ScriptName, (int)status, output ?? string.Empty, script.ChangeId);
                 }
             }
             catch (DbException e)
@@ -192,8 +191,8 @@ SELECT ChangeId FROM {0} WHERE Folder = @1 and ScriptNumber = @2",
         public void CreateChangeLogTable()
         {
             // Get table creation script from embeded file.
-            string script = this.syntax.CreateChangeLogTableSqlScript(this.changeLogTableName);
-            this.queryExecuter.Execute(script);
+            string script = syntax.CreateChangeLogTableSqlScript(changeLogTableName);
+            queryExecuter.Execute(script);
         }
     }
 }

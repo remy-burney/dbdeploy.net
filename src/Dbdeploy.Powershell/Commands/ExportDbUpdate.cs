@@ -19,9 +19,9 @@ namespace Dbdeploy.Powershell.Commands
         {
             base.ProcessRecord();
 
-            if (string.IsNullOrEmpty(this.OutputFile))
+            if (string.IsNullOrEmpty(OutputFile))
             {
-                this.WriteError(new ErrorRecord(new PSInvalidOperationException(
+                WriteError(new ErrorRecord(new PSInvalidOperationException(
                     "Missing a file for output"),
                     "NoOutputFile",
                     ErrorCategory.MetadataError,
@@ -32,19 +32,19 @@ namespace Dbdeploy.Powershell.Commands
 
             var config = new DbDeployConfig
                              {
-                                 Dbms = this.DatabaseType,
-                                 ConnectionString = this.ConnectionString,
-                                 ChangeLogTableName = this.TableName,
-                                 ScriptDirectory = new DirectoryInfo(this.deltasDirectory),
-                                 AutoCreateChangeLogTable = this.AutoCreateChangeLogTable,
-                                 ForceUpdate = this.ForceUpdate,
-                                 UseSqlCmd = this.UseSqlCmd,
-                                 OutputFile = new FileInfo(this.ToAbsolutePath(this.OutputFile))
+                                 Dbms = DatabaseType,
+                                 ConnectionString = ConnectionString,
+                                 ChangeLogTableName = TableName,
+                                 ScriptDirectory = new DirectoryInfo(deltasDirectory),
+                                 AutoCreateChangeLogTable = AutoCreateChangeLogTable,
+                                 ForceUpdate = ForceUpdate,
+                                 UseSqlCmd = UseSqlCmd,
+                                 OutputFile = new FileInfo(ToAbsolutePath(OutputFile))
                              };
 
-            if (!string.IsNullOrEmpty(this.UndoOutputFile))
+            if (!string.IsNullOrEmpty(UndoOutputFile))
             {
-                config.OutputFile = new FileInfo(this.ToAbsolutePath(UndoOutputFile));
+                config.OutputFile = new FileInfo(ToAbsolutePath(UndoOutputFile));
             }
 
             var deployer = new DbDeployer();

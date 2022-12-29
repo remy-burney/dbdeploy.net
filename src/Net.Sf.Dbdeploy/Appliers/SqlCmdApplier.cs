@@ -7,10 +7,10 @@
     using System.Linq;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Database.SqlCmd;
-    using Net.Sf.Dbdeploy.Exceptions;
-    using Net.Sf.Dbdeploy.Scripts;
+    using Database;
+    using Database.SqlCmd;
+    using Exceptions;
+    using Scripts;
 
     /// <summary>
     /// Applier for running scripts using SQLCMD mode against MSSQL.
@@ -96,16 +96,17 @@
         /// <param name="createChangeLogTable">Whether the change log table script should also be generated at the top</param>
         public void Apply(IEnumerable<ChangeScript> changeScripts, bool createChangeLogTable)
         {
-            using (var sqlCmdExecutor = new SqlCmdExecutor(this.connectionString))
+            using (var sqlCmdExecutor = new SqlCmdExecutor(connectionString))
             {
                 if (createChangeLogTable)
                 {
                     CreateChangeLogTable(sqlCmdExecutor);
                 }
+    
+                var enumerable = changeScripts.ToList();
+                infoTextWriter.WriteLine(enumerable.Any() ? "Applying change scripts...\n" : "No changes to apply.\n");
 
-                this.infoTextWriter.WriteLine(changeScripts.Any() ? "Applying change scripts...\n" : "No changes to apply.\n");
-
-                foreach (var script in changeScripts)
+                foreach (var script in enumerable)
                 {
                     RunScript(script, sqlCmdExecutor);
                 }
@@ -114,29 +115,29 @@
 
         private void CreateChangeLogTable(SqlCmdExecutor sqlCmdExecutor)
         {
-            this.infoTextWriter.WriteLine("Creating change log table");
+            infoTextWriter.WriteLine("Creating change log table");
 
             var output = new StringBuilder();
 
             try
             {
-                if (!sqlCmdExecutor.ExecuteString(this.dbmsSyntax.CreateChangeLogTableSqlScript(this.changeLogTableName), output))
+                if (!sqlCmdExecutor.ExecuteString(dbmsSyntax.CreateChangeLogTableSqlScript(changeLogTableName), output))
                 {
-                    throw new DbDeployException(string.Format("Create ChangeLog Table '{0}' failed.", this.changeLogTableName));
+                    throw new DbDeployException(string.Format("Create ChangeLog Table '{0}' failed.", changeLogTableName));
                 }
             }
             finally
             {
-                this.infoTextWriter.WriteLine(output);
+                infoTextWriter.WriteLine(output);
             }
         }
 
         private void RunScript(ChangeScript script, SqlCmdExecutor sqlCmdExecutor)
         {
-            this.schemaVersionManager.RecordScriptStatus(script, ScriptStatus.Started);
+            schemaVersionManager.RecordScriptStatus(script, ScriptStatus.Started);
 
-            this.infoTextWriter.WriteLine(script);
-            this.infoTextWriter.WriteLine("----------------------------------------------------------");
+            infoTextWriter.WriteLine(script);
+            infoTextWriter.WriteLine("----------------------------------------------------------");
             var output = new StringBuilder();
 
             var success = false;
@@ -150,8 +151,8 @@
             }
             finally
             {
-                this.infoTextWriter.WriteLine(output);
-                this.schemaVersionManager.RecordScriptStatus(script, success ? ScriptStatus.Success : ScriptStatus.Failure,
+                infoTextWriter.WriteLine(output);
+                schemaVersionManager.RecordScriptStatus(script, success ? ScriptStatus.Success : ScriptStatus.Failure,
                     output.ToString());
             }
         }

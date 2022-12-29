@@ -6,36 +6,36 @@
 
     public class LambdaTextWriter : TextWriter
     {
-        private readonly Action<string> _writer;
-        private UnicodeEncoding _encoding;
+        private readonly Action<string> writer;
+        private UnicodeEncoding encoding;
 
         public override Encoding Encoding
         {
             get
             {
-                if (_encoding == null)
+                if (encoding == null)
                 {
-                    _encoding = new UnicodeEncoding(false, false);
+                    encoding = new UnicodeEncoding(false, false);
                 }
-                return _encoding;
+                return encoding;
             }
         }
 
         public LambdaTextWriter(Action<string> writer)
         {
-            _writer = writer;
+            this.writer = writer;
         }
 
 
         public LambdaTextWriter(IFormatProvider formatProvider, Action<string> writer)
             : base(formatProvider)
         {
-            _writer = writer;
+            this.writer = writer;
         }
 
         public override void Write(string value)
         {
-            _writer(value);
+            writer(value);
         }
 
         public override void Write(char[] buffer, int index, int count)

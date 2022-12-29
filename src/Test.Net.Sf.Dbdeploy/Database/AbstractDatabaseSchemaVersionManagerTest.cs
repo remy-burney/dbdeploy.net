@@ -5,7 +5,7 @@ namespace Net.Sf.Dbdeploy.Database
     using System.Globalization;
     using System.Linq;
 
-    using Net.Sf.Dbdeploy.Exceptions;
+    using Exceptions;
 
     using NUnit.Framework;
 
@@ -24,13 +24,13 @@ namespace Net.Sf.Dbdeploy.Database
             var factory = new DbmsFactory(Dbms, ConnectionString);
             var executer = new QueryExecuter(factory);
 
-            this.syntax = factory.CreateDbmsSyntax();
-            databaseSchemaVersion = new DatabaseSchemaVersionManager(executer, this.syntax, TableName);
+            syntax = factory.CreateDbmsSyntax();
+            databaseSchemaVersion = new DatabaseSchemaVersionManager(executer, syntax, TableName);
         }
 
         public virtual void TestCanRetrieveSchemaVersionFromDatabase()
         {
-            this.EnsureTableDoesNotExist();
+            EnsureTableDoesNotExist();
             CreateTable();
             InsertRowIntoTable(5);
 
@@ -41,14 +41,14 @@ namespace Net.Sf.Dbdeploy.Database
 
         public virtual void TestReturnsNoAppliedChangesWhenDatabaseTableDoesNotExist()
         {
-            this.EnsureTableDoesNotExist();
+            EnsureTableDoesNotExist();
 
             Assert.IsEmpty(databaseSchemaVersion.GetAppliedChanges().ToArray());
         }
 
         public virtual void TestThrowsWhenDatabaseTableDoesNotExist()
         {
-            this.EnsureTableDoesNotExist();
+            EnsureTableDoesNotExist();
 
             try
             {
@@ -79,12 +79,12 @@ namespace Net.Sf.Dbdeploy.Database
         /// </summary>
         public virtual void TestShouldCreateChangeLogTableWhenToldToDoSo()
         {
-            this.EnsureTableDoesNotExist();
+            EnsureTableDoesNotExist();
 
             // Create change log table
             databaseSchemaVersion.CreateChangeLogTable();
 
-            this.AssertTableExists("ChangeLog");
+            AssertTableExists("ChangeLog");
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Net.Sf.Dbdeploy.Database
         /// <param name="tableName">Name of the table.</param>
         public void AssertTableExists(string tableName)
         {
-            var schema = this.ExecuteScalar<string>(this.syntax.TableExists(tableName));
+            var schema = ExecuteScalar<string>(syntax.TableExists(tableName));
 
             Assert.IsNotNull(schema, string.Format("{0} table was not created.", tableName));
             Assert.IsNotEmpty(schema, string.Format("{0} table was not created.", tableName));
@@ -105,14 +105,14 @@ namespace Net.Sf.Dbdeploy.Database
         /// <param name="tableName">Name of the table.</param>
         public void AssertTableDoesNotExist(string tableName)
         {
-            var schema = this.ExecuteScalar<string>(this.syntax.TableExists(tableName));
+            var schema = ExecuteScalar<string>(syntax.TableExists(tableName));
 
             Assert.IsNull(schema, string.Format("{0} table was created.", tableName));
         }
 
         public virtual void TestShouldReturnEmptySetWhenTableHasNoRows()
         {
-            this.EnsureTableDoesNotExist();
+            EnsureTableDoesNotExist();
             CreateTable();
 
             Assert.AreEqual(0, databaseSchemaVersion.GetAppliedChanges().Count);
@@ -163,9 +163,9 @@ namespace Net.Sf.Dbdeploy.Database
         /// </summary>
         protected void CreateTable()
         {
-            if (!this.databaseSchemaVersion.ChangeLogTableExists())
+            if (!databaseSchemaVersion.ChangeLogTableExists())
             {
-                this.databaseSchemaVersion.CreateChangeLogTable();
+                databaseSchemaVersion.CreateChangeLogTable();
             };
         }
 
@@ -174,7 +174,7 @@ namespace Net.Sf.Dbdeploy.Database
         /// </summary>
         public void EnsureTableDoesNotExist()
         {
-            this.EnsureTableDoesNotExist(TableName);
+            EnsureTableDoesNotExist(TableName);
         }
 
         protected abstract string ConnectionString { get; }

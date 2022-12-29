@@ -1,22 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2A667F5F-43DC-4158-B5F0-64E6D7F1F9DA}</ProjectGuid>
+    <TargetFramework>net7.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Net.Sf.Dbdeploy</RootNamespace>
-    <AssemblyName>Test.Net.Sf.Dbdeploy</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <UpgradeBackupLocation />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,60 +20,17 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\src\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Build|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\build\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <Optimize>true</Optimize>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <ItemGroup>
-    <Reference Include="Moq, Version=4.1.1308.2321, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Moq.4.1.1308.2321\lib\net40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.8\lib\net40\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NAnt.Core, Version=0.85.2478.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\NAnt.Core.dll</HintPath>
@@ -98,69 +43,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dbdeploy.Console\Dbdeploy.Console.csproj">
-      <Project>{E1E0EC53-D4C1-4C8D-BAAB-A9AD18EE8E2B}</Project>
-      <Name>Dbdeploy.Console</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dbdeploy.NAnt\Dbdeploy.NAnt.csproj">
-      <Project>{C2382F42-1186-463C-B270-DD074FD4BA09}</Project>
-      <Name>Dbdeploy.NAnt</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dbdeploy.Powershell\Dbdeploy.Powershell.csproj">
-      <Project>{BEA3109E-9EBC-4D3E-A69C-971059FF661F}</Project>
-      <Name>Dbdeploy.Powershell</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Net.Sf.Dbdeploy\Net.Sf.Dbdeploy.csproj">
-      <Project>{A7A5B171-0A90-4652-A6F1-D4E1A480ACBE}</Project>
-      <Name>Net.Sf.Dbdeploy</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Appliers\SqlCmdApplierTest.cs" />
-    <Compile Include="Appliers\DirectToDbApplierAccessor.cs" />
-    <Compile Include="Appliers\DirectToDbApplierTest.cs" />
-    <Compile Include="Console\OptionsManagerTest.cs" />
-    <Compile Include="ControllerTest.cs" />
-    <Compile Include="Database\MySqlDatabaseSchemaVersionManagerTest.cs" />
-    <Compile Include="UniqueChangeTest.cs" />
-    <Compile Include="Database\DatabaseSchemaVersionManagerTest.cs" />
-    <Compile Include="Database\QueryStatementSplitterTest.cs" />
-    <Compile Include="Database\ScriptGenerationTest.cs" />
-    <Compile Include="Database\SqlCmd\ConnectionStringParserTest.cs" />
-    <Compile Include="NullWriter.cs" />
-    <Compile Include="Appliers\TemplateBaseApplierTest.cs" />
-    <Compile Include="Database\AbstractDatabaseSchemaVersionManagerTest.cs" />
-    <Compile Include="Database\DbProvidersTest.cs" />
-    <Compile Include="Database\DbProviderFileTest.cs" />
-    <Compile Include="Database\MsSqlDatabaseSchemaVersionManagerTest.cs" />
-    <Compile Include="Database\OracleDatabaseSchemaVersionManagerTest.cs" />
-    <Compile Include="DescriptionPrettyPrinterTest.cs" />
-    <Compile Include="DummyDbException.cs" />
-    <Compile Include="OutputFileEncodingTest.cs" />
-    <Compile Include="PrettyPrinterTest.cs" />
-    <Compile Include="Scripts\ChangeScriptRepositoryTest.cs" />
-    <Compile Include="Scripts\ChangeScriptTest.cs" />
-    <Compile Include="Scripts\DirectoryScannerTest.cs" />
-    <Compile Include="Scripts\FilenameParserTest.cs" />
-    <Compile Include="Scripts\StubChangeScript.cs" />
-    <Compile Include="Configuration\DbDeployConfigurationManagerTest.cs" />
+    <ProjectReference Include="..\Dbdeploy.Console\Dbdeploy.Console.csproj" />
+    <ProjectReference Include="..\Dbdeploy.NAnt\Dbdeploy.NAnt.csproj" />
+    <ProjectReference Include="..\Dbdeploy.Powershell\Dbdeploy.Powershell.csproj" />
+    <ProjectReference Include="..\Net.Sf.Dbdeploy\Net.Sf.Dbdeploy.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)dbproviders.xml" "$(TargetDir)"</PostBuildEvent>
-    <PreBuildEvent>
-    </PreBuildEvent>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
@@ -179,6 +71,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="appsettings.json" />
     <Content Include="Mocks\DbDeploy.MultipleChangeSets.config.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -227,5 +120,16 @@
   <ItemGroup>
     <Folder Include="Mocks\Versioned\R1\" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0-preview2.22314.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.80" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.355802">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Moq" Version="4.18.3" />
+    <PackageReference Include="MySql.Data" Version="6.10.9" />
+  </ItemGroup>
 </Project>

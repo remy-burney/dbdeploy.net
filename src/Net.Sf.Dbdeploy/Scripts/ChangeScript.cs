@@ -47,8 +47,8 @@ namespace Net.Sf.Dbdeploy.Scripts
         public ChangeScript(string folder, int scriptNumber, FileInfo fileInfo, Encoding encoding)
             : base(folder, scriptNumber)
         {
-            this.FileInfo = fileInfo;
-            this.ScriptName = fileInfo.Name;
+            FileInfo = fileInfo;
+            ScriptName = fileInfo.Name;
             this.encoding = encoding;
         }
 
@@ -61,8 +61,8 @@ namespace Net.Sf.Dbdeploy.Scripts
         public ChangeScript(string folder, int scriptNumber, string fileName)
             : base(folder, scriptNumber)
         {
-            this.FileInfo = null;
-            this.ScriptName = fileName;
+            FileInfo = null;
+            ScriptName = fileName;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Net.Sf.Dbdeploy.Scripts
         /// <returns>File content.</returns>
         public virtual string GetContent()
         {
-            return this.GetFileContents();
+            return GetFileContents();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Net.Sf.Dbdeploy.Scripts
         /// <returns>Undo file content.</returns>
         public virtual string GetUndoContent()
         {
-            return this.GetFileContents(undo: true);
+            return GetFileContents(undo: true);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Net.Sf.Dbdeploy.Scripts
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}/{1} ({2})", this.Folder, this.ScriptName, this.ScriptNumber);
+            return string.Format(CultureInfo.InvariantCulture, "{0}/{1} ({2})", Folder, ScriptName, ScriptNumber);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Net.Sf.Dbdeploy.Scripts
 
             bool foundUndo = false;
 
-            using (var input = new StreamReader(this.FileInfo.FullName, this.encoding))
+            using (var input = new StreamReader(FileInfo.FullName, encoding))
             {
                 string str;
                 while ((str = input.ReadLine()) != null)

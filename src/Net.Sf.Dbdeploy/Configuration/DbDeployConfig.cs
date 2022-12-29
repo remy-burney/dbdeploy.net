@@ -3,7 +3,7 @@
     using System.IO;
     using System.Text;
 
-    using Net.Sf.Dbdeploy.Database;
+    using Database;
 
     /// <summary>
     /// Represents DbDeploy configuration settings.
@@ -140,20 +140,20 @@
         public DbDeployConfig()
         {
             // Set all defaults.
-            this.Dbms = DbDeployDefaults.Dbms;
-            this.ConnectionString = DbDeployDefaults.ConnectionString;
-            this.ScriptDirectory = DbDeployDefaults.ScriptDirectory;
-            this.OutputFile = DbDeployDefaults.OutputFile;
-            this.ChangeLogTableName = DbDeployDefaults.ChangeLogTableName;
-            this.AutoCreateChangeLogTable = DbDeployDefaults.AutoCreateChangeLogTable;
-            this.ForceUpdate = DbDeployDefaults.ForceUpdate;
-            this.UseSqlCmd = DbDeployDefaults.UseSqlCmd;
-            this.LastChangeToApply = DbDeployDefaults.LastChangeToApply;
-            this.Encoding = DbDeployDefaults.Encoding;
-            this.TemplateDirectory = DbDeployDefaults.TemplateDirectory;
-            this.Delimiter = DbDeployDefaults.Delimiter;
-            this.DelimiterType = DbDeployDefaults.DelimiterType;
-            this.LineEnding = DbDeployDefaults.LineEnding;
+            Dbms = DbDeployDefaults.Dbms;
+            ConnectionString = DbDeployDefaults.ConnectionString;
+            ScriptDirectory = DbDeployDefaults.ScriptDirectory;
+            OutputFile = DbDeployDefaults.OutputFile;
+            ChangeLogTableName = DbDeployDefaults.ChangeLogTableName;
+            AutoCreateChangeLogTable = DbDeployDefaults.AutoCreateChangeLogTable;
+            ForceUpdate = DbDeployDefaults.ForceUpdate;
+            UseSqlCmd = DbDeployDefaults.UseSqlCmd;
+            LastChangeToApply = DbDeployDefaults.LastChangeToApply;
+            Encoding = DbDeployDefaults.Encoding;
+            TemplateDirectory = DbDeployDefaults.TemplateDirectory;
+            Delimiter = DbDeployDefaults.Delimiter;
+            DelimiterType = DbDeployDefaults.DelimiterType;
+            LineEnding = DbDeployDefaults.LineEnding;
         }
     }
 }
