@@ -1,15 +1,14 @@
-namespace Net.Sf.Dbdeploy
+using System;
+using System.IO;
+using Dbdeploy.Core;
+using Dbdeploy.Core.Configuration;
+using Dbdeploy.Core.Database;
+using Dbdeploy.Core.Exceptions;
+using NAnt.Core;
+using NAnt.Core.Attributes;
+
+namespace Dbdeploy.NAnt
 {
-    using System;
-    using System.IO;
-
-    using NAnt.Core;
-    using NAnt.Core.Attributes;
-
-    using Configuration;
-    using Database;
-    using Exceptions;
-
     [TaskName("dbdeploy")]
     public class NAntTask : Task
     {

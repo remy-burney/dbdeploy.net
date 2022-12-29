@@ -14,9 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dbdeploy.Console", "Dbdeploy.Console\Dbdeploy.Console.csproj", "{E1E0EC53-D4C1-4C8D-BAAB-A9AD18EE8E2B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net.Sf.Dbdeploy", "Net.Sf.Dbdeploy\Net.Sf.Dbdeploy.csproj", "{A7A5B171-0A90-4652-A6F1-D4E1A480ACBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dbdeploy.Core", "Dbdeploy.Core\Dbdeploy.Core.csproj", "{A7A5B171-0A90-4652-A6F1-D4E1A480ACBE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Net.Sf.Dbdeploy", "Test.Net.Sf.Dbdeploy\Test.Net.Sf.Dbdeploy.csproj", "{2A667F5F-43DC-4158-B5F0-64E6D7F1F9DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Dbdeploy", "Test.Dbdeploy\Test.Dbdeploy.csproj", "{2A667F5F-43DC-4158-B5F0-64E6D7F1F9DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSBuild.Dbdeploy.Task", "MSBuild.Dbdeploy.Task\MSBuild.Dbdeploy.Task.csproj", "{BD12111C-BB14-4BB4-AE33-EEE50DB6B659}"
 EndProject

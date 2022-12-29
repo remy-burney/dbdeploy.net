@@ -5,6 +5,7 @@
     <RestorePackages>true</RestorePackages>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetFramework>net7.0</TargetFramework>
+    <Version>3.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SolutionVersionAssemblyInfo.cs">
@@ -12,7 +13,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Net.Sf.Dbdeploy\Net.Sf.Dbdeploy.csproj" />
+    <ProjectReference Include="..\Dbdeploy.Core\Dbdeploy.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />

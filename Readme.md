@@ -11,13 +11,11 @@ Manages the deployment of numbered change scripts in versioned folders to a SQL,
 * Supports XML configuration for multiple change sets.
 * Supports separate schema name for change log table (example: dbo2.ChangeLog).
 
-# Downloads
-
-Latest binaries available at https://bintray.com/brunomlopes/generic/dbdeploy.NET
-
 # Usage
 
-dbdeploy.NET integrates with the following platforms:
+dbdeploy.NET can be used in your .net core project.
+
+It has integrations with the following platforms:
 
 * Command Line
 * Powershell
@@ -29,6 +27,20 @@ It also runs in the following modes:
 * Direct to database
 * SQLCMD
 * Combined ouput script to be run
+
+## Code
+
+To use dbdeploy.NET in your .net core project you need to include the nuget package [ `Dbdeploy.Core`](https://www.nuget.org/packages/Dbdeploy.Core)
+Then it's as easy as a few lines of codes as per the below example :
+```
+var dbDeployConfig = new DbDeployConfig()
+{
+    ConnectionString = "Server=.\SQL2012;Database=DBDEPLOY;Trusted_Connection=True;",
+    ScriptDirectory = new DirectoryInfo("C:\MyProject\Database\Scripts")
+};
+var deployer = new DbDeployer();
+deployer.Execute(dbDeployConfig, Console.Out);
+```
 
 ## Command Line
 
@@ -59,7 +71,7 @@ The versioned folder system supports up to the standard four numbers in .NET (Ex
 
 ### Example Output
 
-<pre>
+```
 ==========================================================
 dbdeploy.net 2.0.0.0
 Reading change scripts from directory 'C:\MyProject\Database\Scripts'...
@@ -103,10 +115,10 @@ Done adding customers
 
 
 All scripts applied successfully.
-</pre>
+```
 
 ### All Command Options
-<pre>
+```
   -d, --dbms=VALUE           DBMS type ('mssql', 'mysql' or 'ora')
   -c, --connectionstring=VALUE
                              connection string for database
@@ -137,7 +149,7 @@ All scripts applied successfully.
       --lineending=VALUE     line ending to use when applying scripts direct
                                to db (platform, cr, crlf, lf)
       --config=VALUE         configuration file to use for all settings.
-</pre>
+```
 
 ### Re-running with Failed Scripts
 
@@ -148,7 +160,7 @@ When a script has failed to execute successfully, it will be tracked in the chan
 
 Example output when a run has failed is shown below:
 
-<pre>
+```
 ==========================================================
 dbdeploy.net 2.0.0.0
 Reading change scripts from directory 'C:\MyProject\Database\Scripts'...
@@ -162,7 +174,7 @@ Ouput from the previous run
 Unable to create object 'Customer'.
 
 The table already exists.
-</pre>
+```
 
 # Change Log Table
 
@@ -241,4 +253,14 @@ Using SQL Server Developer Tools is still highly valuable with dbdeploy.NET.  It
 
 # Additional Info
 
-dbdeploy.NET was originally ported from [dbdeploy](http://code.google.com/p/dbdeploy/).
+### History of DbDeploy
+
+- Before 2007 : DBDeploy was created using Java language by Graham Tackley, Nick Ashley with some help by Sam Newman. It was designed to be a database refactoring tool in its original implementation.
+- 2007, September 25th : DBDeploy.NET v.1.0 officially released. It represents a port of the existing java version into the .NET framework and is more geared towards inclusion in .Net projects. It currently integrates with the NAnt build tool supporting Oracle, MS SQL Server, and MySQL databases. Thanks goes out to Owen Rogers, Troy Gould, Robert Norton and Tim Goodwin, who contributed to the release
+- 2009, May 4th : DbDeploy for java 3.0 M1 has been released. This version includes significant refactoring and other updates as
+  a result of the move to [google code](http://code.google.com/p/dbdeploy/)
+- 2009, Oct 19th : DbDeploy for java 3.0 M2 has been released.
+- 2011, Oct 19th : DbDeploy for java 3.0 M3 has been released. It improves behaviour in failure conditions if the script fails. Source code is also available on the [Graham Tackley Github](https://github.com/tackley/dbdeploy)
+- 2013, June 5th : Dbdeploy.NET v.2.0 release. The project was continued and maintained by [Bruno Lopes on Github](https://github.com/brunomlopes/dbdeploy.net)
+- 2015, Jan 21st : Dbdeploy.NET v.2.2 release. Migration to use .Net Framework 4.5, includes fixes and other upgrades.
+- 2022, Dec 29th : Dbdeploy.NET v3.0 release. Migration to use .Net core 7.0 by [Remy Burney on Github](https://github.com/remy-burney/dbdeploy.net)

@@ -1,7 +1,7 @@
-﻿namespace Net.Sf.Dbdeploy
-{
-    using System.IO;
+﻿using System.IO;
 
+namespace Dbdeploy.Console
+{
     /// <summary>
     /// The configuration file information.
     /// </summary>

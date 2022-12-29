@@ -1,13 +1,13 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
+using System.IO;
 using System.Linq;
+using Dbdeploy.Core;
+using Dbdeploy.Core.Configuration;
+using Dbdeploy.Core.Exceptions;
 
-namespace Net.Sf.Dbdeploy
+namespace Dbdeploy.Console
 {
-    using System;
-    using System.IO;
-    using Configuration;
-    using Exceptions;
-
     /// <summary>
     /// Manages all options for the command line.
     /// </summary>

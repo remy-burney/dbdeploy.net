@@ -1,11 +1,10 @@
 ﻿using System.IO;
 using System.Management.Automation;
-using Net.Sf.Dbdeploy;
+using Dbdeploy.Core;
+using Dbdeploy.Core.Configuration;
 
 namespace Dbdeploy.Powershell.Commands
 {
-    using Net.Sf.Dbdeploy.Configuration;
-
     [Cmdlet(VerbsData.Export, "DbUpdate")]
     public class ExportDbUpdate : DbUpdateBase
     {

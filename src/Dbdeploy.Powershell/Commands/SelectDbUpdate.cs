@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
-using Net.Sf.Dbdeploy.Database;
-using Net.Sf.Dbdeploy.Scripts;
+using Dbdeploy.Core.Database;
+using Dbdeploy.Core.Scripts;
 
 namespace Dbdeploy.Powershell.Commands
 {

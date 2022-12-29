@@ -1,9 +1,9 @@
-namespace Net.Sf.Dbdeploy
+using System;
+using Dbdeploy.Core;
+using Dbdeploy.Core.Exceptions;
+
+namespace Dbdeploy.Console
 {
-    using System;
-
-    using Exceptions;
-
     public class CommandLine
     {
         public static void Main(string[] args)
@@ -17,24 +17,24 @@ namespace Net.Sf.Dbdeploy
                 var deployer = new DbDeployer();
                 foreach (var config in deploymentsConfig.Deployments)
                 {
-                    deployer.Execute(config, Console.Out);
+                    deployer.Execute(config, System.Console.Out);
                 }
             }
             catch (UsageException ex)
             {
-                Console.Error.WriteLine("ERROR: " + ex.Message);
+                System.Console.Error.WriteLine("ERROR: " + ex.Message);
                 
                 OptionsManager.PrintUsage();
             }
             catch (DbDeployException ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                System.Console.Error.WriteLine(ex.Message);
                 exitCode = 1;
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Failed to apply changes: " + ex.Message);
-                Console.Error.WriteLine(ex.StackTrace);
+                System.Console.Error.WriteLine("Failed to apply changes: " + ex.Message);
+                System.Console.Error.WriteLine(ex.StackTrace);
                 exitCode = 2;
             }
 

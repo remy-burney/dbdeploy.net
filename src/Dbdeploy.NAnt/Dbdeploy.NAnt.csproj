@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>Net.Sf.Dbdeploy</RootNamespace>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\src\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <Version>3.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NAnt.Core">
@@ -18,7 +18,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Net.Sf.Dbdeploy\Net.Sf.Dbdeploy.csproj" />
+    <ProjectReference Include="..\Dbdeploy.Core\Dbdeploy.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />

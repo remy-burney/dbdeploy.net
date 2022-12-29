@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Management.Automation;
+using Dbdeploy.Core.Configuration;
 
 namespace Dbdeploy.Powershell.Commands
 {
     using System.Linq;
-
-    using Net.Sf.Dbdeploy.Configuration;
 
     public class DbUpdateBase : PSCmdlet
     {

@@ -1,14 +1,15 @@
+using Dbdeploy;
+using Dbdeploy.Core;
+using Dbdeploy.Core.Configuration;
+using Dbdeploy.Core.Database;
+using Dbdeploy.Core.Exceptions;
+
 namespace MSBuild.Dbdeploy.Task
 {
     using System;
     using System.IO;
 
     using Microsoft.Build.Framework;
-
-    using Net.Sf.Dbdeploy;
-    using Net.Sf.Dbdeploy.Configuration;
-    using Net.Sf.Dbdeploy.Database;
-    using Net.Sf.Dbdeploy.Exceptions;
 
     public class Dbdeploy : ITask
     {

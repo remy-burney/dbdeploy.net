@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Net.Sf.Dbdeploy</RootNamespace>
-    <AssemblyName>dbdeploy</AssemblyName>
-    <StartupObject>Net.Sf.Dbdeploy.CommandLine</StartupObject>
+    <StartupObject>Dbdeploy.Console.CommandLine</StartupObject>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -22,7 +20,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\src\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Version>2.0.0</Version>
+    <Version>3.0.0</Version>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Build|AnyCPU' ">
@@ -37,7 +35,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Net.Sf.Dbdeploy\Net.Sf.Dbdeploy.csproj" />
+    <ProjectReference Include="..\Dbdeploy.Core\Dbdeploy.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
