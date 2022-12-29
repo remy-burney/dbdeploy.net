@@ -28,13 +28,14 @@
     <Title>Dbdeploy.Core</Title>
     <Authors>Remy Burney</Authors>
     <PackageProjectUrl>https://github.com/remy-burney/dbdeploy.net</PackageProjectUrl>
-    <PackageIcon>dbdeploy.png</PackageIcon>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
     <Description>dbdeploy is a Database Change Management tool. It’s for developers or
 DBAs who want to evolve their database design – or refactor their
 database – in a simple, controlled, flexible and frequent manner.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyName>Dbdeploy.Core</AssemblyName>
     <RootNamespace>Dbdeploy.Core</RootNamespace>
+    <PackageIcon>dbdeploy.png</PackageIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Build|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -134,6 +135,11 @@ database – in a simple, controlled, flexible and frequent manner.</Description
       <Pack>True</Pack>
       <PackagePath></PackagePath>
       <Link>dbdeploy.png</Link>
+    </None>
+    <None Include="..\..\Readme.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+      <Link>Readme.md</Link>
     </None>
   </ItemGroup>
 </Project>
